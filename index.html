@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { background-color: #0B1118; }
     :root {
       --bg-primary: #0B1118;
       --bg-card: #16202C;
@@ -16,7 +15,11 @@
       --text-primary: #FFFFFF;
       --text-secondary: #8A99AD;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
     .card { background-color: var(--bg-card); border-radius: 16px; }
     .text-emerald { color: var(--accent-emerald); }
     .text-red-custom { color: var(--accent-red); }
@@ -46,7 +49,16 @@
       transition: opacity 0.2s;
     }
     .btn-primary:active { opacity: 0.8; }
-    .input-field {
+    .btn-secondary {
+      background-color: #1e293b;
+      color: var(--text-primary);
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 14px 24px;
+      transition: opacity 0.2s;
+    }
+    .btn-secondary:active { opacity: 0.8; }
+    .input-field, .select-field {
       background-color: #1e293b;
       border: 1px solid #2d3a4a;
       border-radius: 12px;
@@ -56,7 +68,15 @@
       width: 100%;
       outline: none;
     }
-    .input-field:focus { border-color: var(--accent-emerald); }
+    .input-field:focus, .select-field:focus { border-color: var(--accent-emerald); }
+    .select-field {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A99AD' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 18px;
+    }
     .category-chip {
       background-color: #1e293b;
       border-radius: 20px;
@@ -92,7 +112,7 @@
     }
     .fab-button {
       position: fixed;
-      bottom: 24px;
+      bottom: 80px;
       right: 24px;
       width: 60px;
       height: 60px;
@@ -113,6 +133,7 @@
       border-radius: 14px;
       padding: 16px;
     }
+    .nav-btn.active-tab { color: var(--accent-emerald); }
     @keyframes slideUp {
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -145,12 +166,13 @@
       from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
       to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
-    .toast-success { background-color: rgba(0, 230, 153, 0.9); color: #0B1118; }
-    .toast-error { background-color: rgba(255, 82, 82, 0.9); color: white; }
+    .toast-success { background-color: rgba(0, 230, 153, 0.95); color: #0B1118; }
+    .toast-error { background-color: rgba(255, 82, 82, 0.95); color: white; }
+    .toast-info { background-color: rgba(59, 130, 246, 0.95); color: white; }
     ::-webkit-scrollbar { width: 0; }
   </style>
 </head>
-<body class="text-white min-h-screen pb-24">
+<body class="min-h-screen pb-24">
 
   <!-- HEADER / BALANCE -->
   <header class="px-5 pt-12 pb-6">
@@ -159,9 +181,9 @@
         <p class="text-secondary text-sm">Balance Disponible</p>
         <h1 id="balance" class="text-4xl font-bold text-emerald">$0.00</h1>
       </div>
-      <div class="w-10 h-10 rounded-full bg-card flex items-center justify-center">
+      <button onclick="openStatsModal()" class="w-10 h-10 rounded-full bg-card flex items-center justify-center">
         <i class="fas fa-chart-pie text-secondary"></i>
-      </div>
+      </button>
     </div>
 
     <div class="grid grid-cols-2 gap-3">
@@ -214,7 +236,7 @@
   <div id="gasto-modal" class="fixed inset-0 modal-overlay z-50 hidden items-end justify-center">
     <div class="bg-[#16202C] w-full max-w-lg rounded-t-3xl p-6 slide-up">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-bold">Gasto Rapido</h3>
+        <h3 class="text-xl font-bold">Gasto Rápido</h3>
         <button onclick="closeGastoModal()" class="text-secondary text-2xl">&times;</button>
       </div>
 
@@ -223,7 +245,7 @@
           <label class="text-secondary text-sm mb-2 block">Monto</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-emerald">$</span>
-            <input type="number" step="0.01" min="0" id="gasto-monto"
+            <input type="number" step="0.01" min="0.01" id="gasto-monto"
               class="input-field pl-10 text-2xl font-bold" placeholder="0.00" required>
           </div>
         </div>
@@ -235,16 +257,16 @@
         </div>
 
         <div class="mb-6">
-          <label class="text-secondary text-sm mb-3 block">Categoria</label>
+          <label class="text-secondary text-sm mb-3 block">Categoría</label>
           <div id="categorias-chips" class="flex flex-wrap gap-2">
-            <span class="category-chip active" data-categoria="alimentacion">Alimentacion</span>
+            <span class="category-chip active" data-categoria="alimentacion">Alimentación</span>
             <span class="category-chip" data-categoria="transporte">Transporte</span>
             <span class="category-chip" data-categoria="entretenimiento">Entretenimiento</span>
             <span class="category-chip" data-categoria="salud">Salud</span>
-            <span class="category-chip" data-categoria="educacion">Educacion</span>
+            <span class="category-chip" data-categoria="educacion">Educación</span>
             <span class="category-chip" data-categoria="hogar">Hogar</span>
             <span class="category-chip" data-categoria="ropa">Ropa</span>
-            <span class="category-chip" data-categoria="tecnologia">Tecnologia</span>
+            <span class="category-chip" data-categoria="tecnologia">Tecnología</span>
             <span class="category-chip" data-categoria="gasto_hormiga">Gasto hormiga</span>
             <span class="category-chip" data-categoria="otro">Otro</span>
           </div>
@@ -253,7 +275,7 @@
         <div id="presupuesto-bar-container" class="mb-6 hidden">
           <div class="flex items-center justify-between mb-2">
             <span class="text-secondary text-sm">Presupuesto restante</span>
-            <span id="presupuesto-restante-text" class="text-sm font-semibold text-emerald">$0</span>
+            <span id="presupuesto-restante-text" class="text-sm font-semibold text-emerald">$0.00</span>
           </div>
           <div class="progress-bar">
             <div id="presupuesto-bar" class="progress-fill bg-emerald" style="width: 100%"></div>
@@ -280,7 +302,7 @@
           <label class="text-secondary text-sm mb-2 block">Monto</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-emerald">$</span>
-            <input type="number" step="0.01" min="0" id="ingreso-monto"
+            <input type="number" step="0.01" min="0.01" id="ingreso-monto"
               class="input-field pl-10 text-2xl font-bold" placeholder="0.00" required>
           </div>
         </div>
@@ -298,28 +320,86 @@
     </div>
   </div>
 
+  <!-- MODAL PRESUPUESTO (crear / editar límite de categoría) -->
+  <div id="presupuesto-modal" class="fixed inset-0 modal-overlay z-50 hidden items-end justify-center">
+    <div class="bg-[#16202C] w-full max-w-lg rounded-t-3xl p-6 slide-up">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Configurar Presupuesto</h3>
+        <button onclick="closePresupuestoModal()" class="text-secondary text-2xl">&times;</button>
+      </div>
+
+      <form id="presupuesto-form" onsubmit="submitPresupuesto(event)">
+        <div class="mb-4">
+          <label class="text-secondary text-sm mb-2 block">Categoría</label>
+          <select id="presupuesto-categoria" class="select-field" onchange="onPresupuestoCategoriaChange()"></select>
+        </div>
+
+        <div class="mb-2">
+          <label class="text-secondary text-sm mb-2 block">Límite mensual</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-emerald">$</span>
+            <input type="number" step="0.01" min="0.01" id="presupuesto-limite"
+              class="input-field pl-10 text-2xl font-bold" placeholder="0.00" required>
+          </div>
+        </div>
+        <p id="presupuesto-existente-hint" class="text-secondary text-xs mb-6 hidden"></p>
+        <div id="presupuesto-form-spacer" class="mb-6"></div>
+
+        <button type="submit" id="btn-submit-presupuesto" class="btn-primary w-full text-lg">
+          Guardar Presupuesto
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL STATS -->
+  <div id="stats-modal" class="fixed inset-0 modal-overlay z-50 hidden items-end justify-center">
+    <div class="bg-[#16202C] w-full max-w-lg rounded-t-3xl p-6 slide-up" style="max-height: 85vh; overflow-y: auto;">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold">Estadísticas</h3>
+        <button onclick="closeStatsModal()" class="text-secondary text-2xl">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="stat-card">
+          <p class="text-secondary text-xs mb-1">Total Ingresos</p>
+          <p id="stats-total-ingresos" class="text-lg font-semibold text-emerald">$0.00</p>
+        </div>
+        <div class="stat-card">
+          <p class="text-secondary text-xs mb-1">Total Gastos</p>
+          <p id="stats-total-gastos" class="text-lg font-semibold text-red-custom">$0.00</p>
+        </div>
+      </div>
+
+      <h4 class="text-sm font-semibold text-secondary mb-3">Gastos por categoría</h4>
+      <div id="stats-categorias-container" class="space-y-3">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="fixed bottom-0 left-0 right-0 bg-[#0f1722] border-t border-[#1e293b] px-6 py-4 flex items-center justify-around z-40">
-    <button class="flex flex-col items-center gap-1 text-emerald">
+    <button class="nav-btn active-tab flex flex-col items-center gap-1 text-emerald">
       <i class="fas fa-home text-xl"></i>
       <span class="text-xs">Inicio</span>
     </button>
-    <button onclick="openIngresoModal()" class="flex flex-col items-center gap-1 text-secondary">
+    <button onclick="openIngresoModal()" class="nav-btn flex flex-col items-center gap-1 text-secondary">
       <i class="fas fa-arrow-down text-xl"></i>
       <span class="text-xs">Ingreso</span>
     </button>
-    <button onclick="openGastoModal()" class="flex flex-col items-center gap-1 text-secondary">
+    <button onclick="openGastoModal()" class="nav-btn flex flex-col items-center gap-1 text-secondary">
       <i class="fas fa-arrow-up text-xl"></i>
       <span class="text-xs">Gasto</span>
     </button>
-    <button class="flex flex-col items-center gap-1 text-secondary">
+    <button onclick="openStatsModal()" class="nav-btn flex flex-col items-center gap-1 text-secondary">
       <i class="fas fa-chart-bar text-xl"></i>
       <span class="text-xs">Stats</span>
     </button>
   </nav>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz-wLH8VTEh3jhdsJjYU3s7vTkqH8n4tsQVGO8-zVBxVPQne1rvcP-uCIARKKwCAnPVLQ/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw0F0y9Mbr0IPttRND2yqyrBe-G7nQwvFQmdUQVc177f2CWQZDZ3CXrs3zI9IqzNs2R/exec';
 
     const CATEGORIAS = {
       alimentacion: { emoji: '🍔', color: '#F59E0B', nombre: 'Alimentación' },
@@ -341,6 +421,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       cargarDashboard();
       setupCategoryChips();
+      poblarSelectCategorias();
     });
 
     function setupCategoryChips() {
@@ -353,6 +434,14 @@
           actualizarBarraPresupuesto();
         });
       });
+    }
+
+    function poblarSelectCategorias() {
+      const select = document.getElementById('presupuesto-categoria');
+      select.innerHTML = Object.keys(CATEGORIAS)
+        .filter(key => key !== 'ingreso')
+        .map(key => `<option value="${key}">${CATEGORIAS[key].emoji} ${CATEGORIAS[key].nombre}</option>`)
+        .join('');
     }
 
     async function cargarDashboard() {
@@ -390,12 +479,13 @@
       const container = document.getElementById('presupuestos-container');
 
       if (!lista || lista.length === 0) {
-        container.innerHTML = '<div class="card p-4 text-center text-secondary text-sm">Sin presupuestos configurados</div>';
+        container.innerHTML = '<div class="card p-4 text-center text-secondary text-sm">Sin presupuestos configurados. Toca "+" para crear uno.</div>';
         return;
       }
 
       container.innerHTML = lista.map(p => {
-        const cat = CATEGORIAS[p.categoria] || CATEGORIAS.otro;
+        const catKey = (p.categoria || '').toLowerCase();
+        const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
         const porcentaje = p.monto_limite > 0
           ? Math.min((p.monto_gastado / p.monto_limite) * 100, 100)
           : 0;
@@ -429,7 +519,8 @@
       }
 
       container.innerHTML = lista.map(m => {
-        const cat = CATEGORIAS[m.categoria] || CATEGORIAS.otro;
+        const catKey = (m.categoria || '').toLowerCase();
+        const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
         const esIngreso = m.tipo === 'Ingreso';
         const colorMonto = esIngreso ? 'text-emerald' : 'text-red-custom';
         const signo = esIngreso ? '+' : '-';
@@ -440,7 +531,7 @@
           <div class="transaction-item">
             <div class="category-icon" style="background-color: ${cat.color}20; color: ${cat.color}">${cat.emoji}</div>
             <div class="flex-1 min-w-0">
-              <p class="font-medium truncate">${m.etiqueta || m.nota || cat.nombre}</p>
+              <p class="font-medium truncate">${m.concepto || m.nota || cat.nombre}</p>
               <p class="text-secondary text-xs">${fechaStr}</p>
             </div>
             <span class="font-semibold ${colorMonto}">${signo}${formatearMoneda(m.monto)}</span>
@@ -479,8 +570,143 @@
       document.getElementById('ingreso-form').reset();
     }
 
+    // ----- PRESUPUESTOS: crear / editar -----
+
     function openPresupuestoModal() {
-      mostrarToast('Proximamente: configurar presupuestos', 'info');
+      const modal = document.getElementById('presupuesto-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      onPresupuestoCategoriaChange();
+    }
+
+    function closePresupuestoModal() {
+      const modal = document.getElementById('presupuesto-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('presupuesto-form').reset();
+      document.getElementById('presupuesto-existente-hint').classList.add('hidden');
+    }
+
+    function onPresupuestoCategoriaChange() {
+      const categoria = document.getElementById('presupuesto-categoria').value;
+      const existente = presupuestos.find(p => (p.categoria || '').toLowerCase() === categoria.toLowerCase());
+      const hint = document.getElementById('presupuesto-existente-hint');
+      const limiteInput = document.getElementById('presupuesto-limite');
+
+      if (existente) {
+        limiteInput.value = existente.monto_limite;
+        hint.textContent = `Ya tiene un límite de ${formatearMoneda(existente.monto_limite)}. Guardar lo actualizará.`;
+        hint.classList.remove('hidden');
+      } else {
+        limiteInput.value = '';
+        hint.classList.add('hidden');
+      }
+    }
+
+    async function submitPresupuesto(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById('btn-submit-presupuesto');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
+
+      const payload = {
+        action: 'configurar_presupuesto',
+        categoria: document.getElementById('presupuesto-categoria').value,
+        monto_limite: parseFloat(document.getElementById('presupuesto-limite').value)
+      };
+
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          mostrarToast('Presupuesto guardado', 'success');
+          closePresupuestoModal();
+          cargarDashboard();
+        } else {
+          mostrarToast(result.message || 'Error al guardar', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('Error de conexión', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+      }
+    }
+
+    // ----- STATS -----
+
+    function openStatsModal() {
+      const modal = document.getElementById('stats-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      loadStats();
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('stats-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function loadStats() {
+      const container = document.getElementById('stats-categorias-container');
+      container.innerHTML = '<div class="spinner"></div>';
+
+      try {
+        const response = await fetch(`${WEB_APP_URL}?action=stats`);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          document.getElementById('stats-total-ingresos').textContent = formatearMoneda(data.total_ingresos);
+          document.getElementById('stats-total-gastos').textContent = formatearMoneda(data.total_gastos);
+          renderizarStats(data.por_categoria || []);
+        } else {
+          container.innerHTML = '<p class="text-secondary text-sm text-center">No se pudieron cargar las estadísticas</p>';
+        }
+      } catch (error) {
+        console.error('Error al cargar stats:', error);
+        container.innerHTML = '<p class="text-secondary text-sm text-center">Error de conexión</p>';
+      }
+    }
+
+    function renderizarStats(lista) {
+      const container = document.getElementById('stats-categorias-container');
+
+      if (!lista || lista.length === 0) {
+        container.innerHTML = '<p class="text-secondary text-sm text-center">Aún no hay gastos registrados</p>';
+        return;
+      }
+
+      const maxTotal = Math.max(...lista.map(item => item.total));
+
+      container.innerHTML = lista.map(item => {
+        const catKey = (item.categoria || '').toLowerCase();
+        const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
+        const porcentaje = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
+
+        return `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">${cat.emoji}</span>
+                <span class="text-sm font-medium">${cat.nombre}</span>
+              </div>
+              <span class="text-sm font-semibold">${formatearMoneda(item.total)}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
+            </div>
+          </div>`;
+      }).join('');
     }
 
     function resetCategoryChips() {
@@ -493,7 +719,7 @@
     function actualizarBarraPresupuesto() {
       const container = document.getElementById('presupuesto-bar-container');
       const presupuesto = presupuestos.find(p =>
-        p.categoria.toLowerCase() === categoriaSeleccionada.toLowerCase()
+        (p.categoria || '').toLowerCase() === categoriaSeleccionada.toLowerCase()
       );
 
       if (!presupuesto) {
@@ -549,7 +775,7 @@
         }
       } catch (error) {
         console.error('Error:', error);
-        mostrarToast('Error de conexion', 'error');
+        mostrarToast('Error de conexión', 'error');
       } finally {
         btn.disabled = false;
         btn.textContent = textoOriginal;
@@ -589,7 +815,7 @@
         }
       } catch (error) {
         console.error('Error:', error);
-        mostrarToast('Error de conexion', 'error');
+        mostrarToast('Error de conexión', 'error');
       } finally {
         btn.disabled = false;
         btn.textContent = textoOriginal;
@@ -601,10 +827,11 @@
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2
-      }).format(valor);
+      }).format(valor || 0);
     }
 
     function formatearFecha(fecha) {
+      if (isNaN(fecha.getTime())) return 'Reciente';
       const ahora = new Date();
       const diff = ahora - fecha;
       const minutos = Math.floor(diff / 60000);
@@ -614,24 +841,17 @@
       if (minutos < 60) return `Hace ${minutos}m`;
       if (horas < 24) return `Hace ${horas}h`;
 
-      return fecha.toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     }
 
-    function mostrarToast(mensaje, tipo) {
+    function mostrarToast(mensaje, tipo = 'info') {
       const toast = document.createElement('div');
       toast.className = `toast toast-${tipo}`;
       toast.textContent = mensaje;
       document.body.appendChild(toast);
 
       setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
+        toast.remove();
       }, 3000);
     }
   </script>
