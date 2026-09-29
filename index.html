@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FinanceTracker</title>
   <!-- PWA Meta Tags -->
-  <link rel="manifest" href="/finance-tracker/manifest.json">
+  <link rel="manifest" href="https://kennedy-sj8.github.io/finance-tracker/manifest.json?v=3">
   <meta name="theme-color" content="#0B1118">
-  <link rel="apple-touch-icon" href="/finance-tracker/icon-192x192.png">
+  <link rel="apple-touch-icon" href="https://kennedy-sj8.github.io/finance-tracker/icon-192x192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -427,11 +427,21 @@
       setupCategoryChips();
       poblarSelectCategorias();
 
-      // Registro del Service Worker para soporte PWA
+      // FORZAR LIMPIEZA DE CACHÉ Y REGISTRO V3
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        });
+      }
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/finance-tracker/sw.js')
-          .then(reg => console.log('Service Worker registrado:', reg.scope))
-          .catch(err => console.log('Error al registrar SW:', err));
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        }).then(() => {
+          navigator.serviceWorker.register('https://kennedy-sj8.github.io/finance-tracker/sw.js?v=3')
+            .then(reg => console.log('SW V3 Registrado'));
+        });
       }
     });
 

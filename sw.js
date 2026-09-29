@@ -1,17 +1,17 @@
-const CACHE_NAME = 'finance-tracker-v2';
+const CACHE_NAME = 'finance-tracker-v3';
 const ASSETS_TO_CACHE = [
-  '/finance-tracker/',
-  '/finance-tracker/index.html',
-  '/finance-tracker/manifest.json'
+  'https://kennedy-sj8.github.io/finance-tracker/',
+  'https://kennedy-sj8.github.io/finance-tracker/index.html',
+  'https://kennedy-sj8.github.io/finance-tracker/manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -24,17 +24,17 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('script.google.com')) {
-    return;
-  }
+  if (event.request.url.includes('script.google.com')) return;
+  
+  // ESTRATEGIA: NETWORK FIRST (Prioridad a internet, si falla usa caché)
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
     })
   );
 });
