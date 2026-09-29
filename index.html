@@ -402,8 +402,11 @@
     </button>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz-wLH8VTEh3jhdsJjYU3s7vTkqH8n4tsQVGO8-zVBxVPQne1rvcP-uCIARKKwCAnPVLQ/exec';
+    const SUPABASE_URL = 'https://qrvuzgnuawwekmyhatspw.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFydnV6Z251YXdla215aGF0c3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTQwMzIsImV4cCI6MjEwNjI5MDAzMn0.4idMtCo1qcxYB_9S5i6TkJEVaAdmZkiV5WtmHBtIWzk';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const CATEGORIAS = {
       alimentacion: { emoji: '🍔', color: '#F59E0B', nombre: 'Alimentación' },
@@ -467,19 +470,44 @@
 
     async function cargarDashboard() {
       try {
-        const response = await fetch(`${WEB_APP_URL}?action=dashboard`);
-        const data = await response.json();
+        const { data: movs, error: errMovs } = await supabase.from('movimientos').select('*').order('fecha', { ascending: false });
+        if (errMovs) throw errMovs;
+        
+        const { data: presups, error: errPresups } = await supabase.from('presupuestos').select('*');
+        if (errPresups) throw errPresups;
 
-        if (data.status === 'success') {
-          actualizarBalance(data.balance_disponible);
-          actualizarIngresos(data.ingresos);
-          actualizarGastos(data.gastos);
-          presupuestos = data.presupuestos || [];
-          renderizarPresupuestos(presupuestos);
-          renderizarMovimientos(data.movimientos_recientes || []);
-        }
+        let ingresos = 0;
+        let gastos = 0;
+        const gastosPorCategoria = {};
+
+        movs.forEach(m => {
+          if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
+          if (m.tipo === 'Gasto') {
+            const amt = Number(m.monto);
+            gastos += amt;
+            const cat = (m.categoria || '').toLowerCase();
+            gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + amt;
+          }
+        });
+
+        actualizarBalance(ingresos - gastos);
+        actualizarIngresos(ingresos);
+        actualizarGastos(gastos);
+
+        presupuestos = presups.map(p => {
+          const gastado = gastosPorCategoria[(p.categoria || '').toLowerCase()] || 0;
+          return {
+            categoria: p.categoria,
+            monto_limite: Number(p.monto_limite),
+            monto_gastado: gastado,
+            restante: Number(p.monto_limite) - gastado
+          };
+        });
+
+        renderizarPresupuestos(presupuestos);
+        renderizarMovimientos(movs.slice(0, 15));
       } catch (error) {
-        console.error('Error al cargar dashboard:', error);
+        console.error('Error:', error);
         mostrarToast('Error al cargar datos', 'error');
       }
     }
@@ -626,34 +654,22 @@
 
     async function submitPresupuesto(e) {
       e.preventDefault();
-
       const btn = document.getElementById('btn-submit-presupuesto');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
 
       const payload = {
-        action: 'configurar_presupuesto',
         categoria: document.getElementById('presupuesto-categoria').value,
         monto_limite: parseFloat(document.getElementById('presupuesto-limite').value)
       };
 
       try {
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-          mostrarToast('Presupuesto guardado', 'success');
-          closePresupuestoModal();
-          cargarDashboard();
-        } else {
-          mostrarToast(result.message || 'Error al guardar', 'error');
-        }
+        const { error } = await supabase.from('presupuestos').upsert([payload], { onConflict: 'categoria' });
+        if (error) throw error;
+        mostrarToast('Presupuesto guardado', 'success');
+        closePresupuestoModal();
+        cargarDashboard();
       } catch (error) {
         console.error('Error:', error);
         mostrarToast('Error de conexión', 'error');
@@ -661,6 +677,7 @@
         btn.disabled = false;
         btn.textContent = textoOriginal;
       }
+    }
     }
 
     // ----- STATS -----
@@ -683,20 +700,33 @@
       container.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const response = await fetch(`${WEB_APP_URL}?action=stats`);
-        const data = await response.json();
+        const { data: movs, error } = await supabase.from('movimientos').select('*');
+        if (error) throw error;
 
-        if (data.status === 'success') {
-          document.getElementById('stats-total-ingresos').textContent = formatearMoneda(data.total_ingresos);
-          document.getElementById('stats-total-gastos').textContent = formatearMoneda(data.total_gastos);
-          renderizarStats(data.por_categoria || []);
-        } else {
-          container.innerHTML = '<p class="text-secondary text-sm text-center">No se pudieron cargar las estadísticas</p>';
-        }
+        let ingresos = 0;
+        let gastos = 0;
+        let agrupados = {};
+
+        movs.forEach(m => {
+          if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
+          if (m.tipo === 'Gasto') {
+            const amt = Number(m.monto);
+            gastos += amt;
+            const cat = (m.categoria || '').toLowerCase();
+            agrupados[cat] = (agrupados[cat] || 0) + amt;
+          }
+        });
+
+        document.getElementById('stats-total-ingresos').textContent = formatearMoneda(ingresos);
+        document.getElementById('stats-total-gastos').textContent = formatearMoneda(gastos);
+
+        const porCategoria = Object.keys(agrupados).map(cat => ({ categoria: cat, total: agrupados[cat] })).sort((a,b) => b.total - a.total);
+        renderizarStats(porCategoria);
       } catch (error) {
-        console.error('Error al cargar stats:', error);
+        console.error('Error:', error);
         container.innerHTML = '<p class="text-secondary text-sm text-center">Error de conexión</p>';
       }
+    }
     }
 
     function renderizarStats(lista) {
@@ -764,36 +794,25 @@
 
     async function submitGasto(e) {
       e.preventDefault();
-
       const btn = document.getElementById('btn-submit-gasto');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
 
       const payload = {
-        action: 'gasto_rapido',
         monto: parseFloat(document.getElementById('gasto-monto').value),
         concepto: document.getElementById('gasto-concepto').value,
         categoria: categoriaSeleccionada,
+        tipo: 'Gasto',
         origen: 'web'
       };
 
       try {
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-          mostrarToast('Gasto registrado', 'success');
-          closeGastoModal();
-          cargarDashboard();
-        } else {
-          mostrarToast(result.message || 'Error al registrar', 'error');
-        }
+        const { error } = await supabase.from('movimientos').insert([payload]);
+        if (error) throw error;
+        mostrarToast('Gasto registrado', 'success');
+        closeGastoModal();
+        cargarDashboard();
       } catch (error) {
         console.error('Error:', error);
         mostrarToast('Error de conexión', 'error');
@@ -802,38 +821,29 @@
         btn.textContent = textoOriginal;
       }
     }
+    }
 
     async function submitIngreso(e) {
       e.preventDefault();
-
       const btn = document.getElementById('btn-submit-ingreso');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
 
       const payload = {
-        action: 'ingreso_inteligente',
         monto: parseFloat(document.getElementById('ingreso-monto').value),
-        fuente: document.getElementById('ingreso-fuente').value,
+        concepto: document.getElementById('ingreso-fuente').value,
+        categoria: 'ingreso',
+        tipo: 'Ingreso',
         origen: 'web'
       };
 
       try {
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-          mostrarToast('Ingreso registrado', 'success');
-          closeIngresoModal();
-          cargarDashboard();
-        } else {
-          mostrarToast(result.message || 'Error al registrar', 'error');
-        }
+        const { error } = await supabase.from('movimientos').insert([payload]);
+        if (error) throw error;
+        mostrarToast('Ingreso registrado', 'success');
+        closeIngresoModal();
+        cargarDashboard();
       } catch (error) {
         console.error('Error:', error);
         mostrarToast('Error de conexión', 'error');
@@ -841,6 +851,7 @@
         btn.disabled = false;
         btn.textContent = textoOriginal;
       }
+    }
     }
 
     function formatearMoneda(valor) {
