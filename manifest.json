@@ -2,7 +2,7 @@
   "name": "Finance Tracker",
   "short_name": "Finanzas",
   "description": "App para control financiero conectada a Google Sheets",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0B1118",
   "theme_color": "#0B1118",
