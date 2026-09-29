@@ -1,8 +1,8 @@
 # Usamos la imagen oficial ligera de Nginx sobre Alpine Linux
 FROM nginx:alpine
 
-# Copiamos el HTML de la aplicación al directorio predeterminado de Nginx
-COPY index.html /usr/share/nginx/html/index.html
+# Copiamos todos los archivos (HTML, manifest, sw.js, íconos) al directorio de Nginx
+COPY . /usr/share/nginx/html/
 
 # Exponemos el puerto 80 del contenedor
 EXPOSE 80
