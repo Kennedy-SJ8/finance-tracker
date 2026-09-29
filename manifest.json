@@ -2,20 +2,20 @@
   "name": "Finance Tracker",
   "short_name": "Finanzas",
   "description": "App para control financiero conectada a Google Sheets",
-  "start_url": "./",
+  "start_url": "/finance-tracker/",
   "display": "standalone",
   "background_color": "#0B1118",
   "theme_color": "#0B1118",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "/finance-tracker/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "/finance-tracker/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

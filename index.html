@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FinanceTracker</title>
   <!-- PWA Meta Tags -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="/finance-tracker/manifest.json">
   <meta name="theme-color" content="#0B1118">
-  <link rel="apple-touch-icon" href="icon-192x192.png">
+  <link rel="apple-touch-icon" href="/finance-tracker/icon-192x192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -429,7 +429,7 @@
 
       // Registro del Service Worker para soporte PWA
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('/finance-tracker/sw.js')
           .then(reg => console.log('Service Worker registrado:', reg.scope))
           .catch(err => console.log('Error al registrar SW:', err));
       }
