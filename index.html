@@ -16,35 +16,38 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    
     :root {
-      --bg-base: #020617; /* slate-950 */
-      --bg-surface: #0f172a; /* slate-900 */
+      --bg-base: #000000;
+      --bg-surface: #18181b;
       --emerald: #10b981;
       --rose: #f43f5e;
     }
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-base);
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
       color: #f8fafc;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: 100px; /* space for nav */
+      padding-bottom: 100px;
       overscroll-behavior-y: none;
     }
     
-    /* Scrollbar oculta pero funcional */
     ::-webkit-scrollbar { display: none; }
     
     .glass-panel {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(24, 24, 27, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
     
     .card-gradient {
-      background: linear-gradient(145deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 1) 100%);
-      border: 1px solid rgba(16, 185, 129, 0.1);
+      background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
+
 
     .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -85,17 +88,15 @@
 </head>
 <body class="antialiased selection:bg-emerald-500/30">
 
-  <!-- MESH BACKGROUND -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-    <div class="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] max-w-3xl max-h-3xl rounded-full bg-emerald-500/5 blur-[120px]"></div>
+  
     <div class="absolute top-[30%] -right-[20%] w-[60vw] h-[60vw] max-w-2xl max-h-2xl rounded-full bg-blue-500/5 blur-[120px]"></div>
     <div class="absolute -bottom-[20%] left-[20%] w-[50vw] h-[50vw] max-w-xl max-h-xl rounded-full bg-purple-500/5 blur-[100px]"></div>
   </div>
 
 
   <!-- TOP HEADER RESPONSIVO -->
-  <div class="fixed top-0 left-0 right-0 z-30 glass-panel border-b border-slate-800/50 pt-12 pb-3 px-6 transition-all">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
+  <div class="fixed top-0 left-0 right-0 z-30 bg-black/60 backdrop-blur-xl border-b border-zinc-800/50 pt-12 pb-3 px-6 transition-all">
+    <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div>
         <p id="fecha-actual" class="text-xs text-emerald-400 font-bold tracking-widest uppercase mb-0.5">Mi Billetera</p>
         <h1 class="text-2xl font-black text-white tracking-tight">Hola, Kennedy 👋</h1>
@@ -103,41 +104,41 @@
       
       <!-- Desktop Actions (Ocultos en móvil) -->
       <div class="hidden md:flex items-center gap-4">
-        <button onclick="openStatsModal()" class="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 font-medium transition-colors text-sm"><i class="fas fa-chart-pie mr-2"></i>Stats</button>
-        <button onclick="openIngresoModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-emerald-400 hover:bg-slate-700 font-bold transition-colors text-sm"><i class="fas fa-plus mr-2"></i>Ingreso</button>
-        <button onclick="openGastoModal()" class="px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-400 font-bold transition-colors text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]"><i class="fas fa-minus mr-2"></i>Gasto</button>
+        <button onclick="openStatsModal()" class="px-4 py-2 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium transition-colors text-sm"><i class="fas fa-chart-pie mr-2"></i>Stats</button>
+        <button onclick="openIngresoModal()" class="px-4 py-2 rounded-xl bg-zinc-800 text-emerald-400 hover:bg-zinc-700 font-bold transition-colors text-sm"><i class="fas fa-plus mr-2"></i>Ingreso</button>
+        <button onclick="openGastoModal()" class="px-5 py-2 rounded-xl bg-emerald-500 text-zinc-950 hover:bg-emerald-400 font-bold transition-colors text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]"><i class="fas fa-minus mr-2"></i>Gasto</button>
       </div>
       
       <!-- Botón Perfil (Móvil) -->
-      <div class="md:hidden h-10 w-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+      <div class="md:hidden h-10 w-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
         <i class="fas fa-wallet"></i>
       </div>
     </div>
   </div>
 
   <!-- MAIN GRID CONTAINER (Responsivo) -->
-  <div class="max-w-6xl mx-auto px-5 pt-32 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+  <div class="max-w-5xl mx-auto px-5 pt-32 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
     
     <!-- COLUMNA IZQUIERDA (Desktop: 5 columnas) -->
     <div class="md:col-span-5 space-y-8">
       <!-- BALANCE CARD -->
       <div class="relative overflow-hidden rounded-[2rem] card-gradient p-8 shadow-2xl shadow-emerald-900/10">
         <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <p class="text-sm font-medium text-slate-300 mb-1 relative z-10">Balance Disponible</p>
+        <p class="text-sm font-medium text-zinc-300 mb-1 relative z-10">Balance Disponible</p>
         <h2 id="balance" class="text-5xl font-extrabold text-white tracking-tight mb-8 relative z-10">S/. 0.00</h2>
         
         <div class="grid grid-cols-2 gap-4 relative z-10">
-          <div class="bg-slate-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
+          <div class="bg-zinc-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-1.5">
               <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ingresos</p>
+              <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Ingresos</p>
             </div>
             <p id="ingresos" class="text-lg font-bold text-emerald-400">S/. 0.00</p>
           </div>
-          <div class="bg-slate-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
+          <div class="bg-zinc-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-1.5">
               <div class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></div>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gastos</p>
+              <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Gastos</p>
             </div>
             <p id="gastos" class="text-lg font-bold text-rose-400">S/. 0.00</p>
           </div>
@@ -145,13 +146,13 @@
       </div>
 
       <!-- WIDGET CONSEJO -->
-      <div class="bg-gradient-to-r from-slate-900 to-slate-800/80 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-slate-700/50 shadow-lg">
+      <div class="bg-gradient-to-r from-zinc-900 to-zinc-800/80 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-700/50 shadow-lg">
         <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 shadow-inner border border-blue-500/20">
            <i class="fas fa-lightbulb text-lg"></i>
         </div>
         <div>
           <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-0.5">Insight Financiero</p>
-          <p class="text-sm text-slate-300 font-medium leading-snug">Mantener tus <span class="text-white font-bold">gastos hormiga</span> bajo control te puede ahorrar hasta S/. 200 al mes.</p>
+          <p class="text-sm text-zinc-300 font-medium leading-snug">Mantener tus <span class="text-white font-bold">gastos hormiga</span> bajo control te puede ahorrar hasta S/. 200 al mes.</p>
         </div>
       </div>
 
@@ -160,7 +161,7 @@
       <div>
         <div class="flex justify-between items-center mb-4 px-1">
           <h3 class="text-lg font-bold text-white tracking-tight">Presupuestos</h3>
-          <button onclick="openPresupuestoModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 transition-colors">
+          <button onclick="openPresupuestoModal()" class="w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center hover:bg-zinc-700 transition-colors">
             <i class="fas fa-plus text-sm"></i>
           </button>
         </div>
@@ -178,7 +179,7 @@
       <div class="flex justify-between items-center mb-4 px-1">
         <h3 class="text-lg font-bold text-white tracking-tight">Movimientos Recientes</h3>
       </div>
-      <div id="movimientos-container" class="bg-[#0f172a] border border-slate-800 rounded-3xl overflow-hidden divide-y divide-slate-800 shadow-xl">
+      <div id="movimientos-container" class="bg-[#18181b] border border-zinc-800 rounded-3xl overflow-hidden divide-y divide-zinc-800 shadow-xl">
         <div class="glass-panel rounded-2xl p-6 flex justify-center">
           <i class="fas fa-circle-notch fa-spin text-emerald-500 text-2xl"></i>
         </div>
@@ -187,18 +188,18 @@
   </div>
 
   <!-- FLOATING BOTTOM NAV (Oculto en Desktop) -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-panel border-t border-slate-800/50 pb-safe z-40 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-panel border-t border-zinc-800/50 pb-safe z-40 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
     <div class="flex justify-around items-center px-6 h-20 relative">
-      <button onclick="openStatsModal()" class="flex flex-col items-center gap-1.5 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+      <button onclick="openStatsModal()" class="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-emerald-400 transition-colors w-16">
         <i class="fas fa-chart-pie text-xl"></i>
         <span class="text-[10px] font-semibold">Stats</span>
       </button>
       <div class="relative -top-6">
-        <button onclick="openGastoModal()" class="w-16 h-16 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.35)] transition-transform active:scale-90 border-4 border-[#020617]">
+        <button onclick="openGastoModal()" class="w-16 h-16 rounded-full bg-emerald-500 text-zinc-950 flex items-center justify-center shadow-[0_8px_20px_rgba(16,185,129,0.35)] transition-transform active:scale-90 border-4 border-[#020617]">
           <i class="fas fa-minus text-2xl"></i>
         </button>
       </div>
-      <button onclick="openIngresoModal()" class="flex flex-col items-center gap-1.5 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+      <button onclick="openIngresoModal()" class="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-emerald-400 transition-colors w-16">
         <i class="fas fa-plus text-xl"></i>
         <span class="text-[10px] font-semibold">Ingreso</span>
       </button>
@@ -207,32 +208,32 @@
 
   <!-- MODAL GASTO (Responsivo: Centrado en Desktop) -->
   <div id="gasto-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-slate-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-slate-700/50 shadow-2xl">
-      <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-6 md:hidden"></div>
+    <div class="bg-zinc-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold text-white">Registrar Gasto</h3>
-        <button onclick="closeGastoModal()" class="w-8 h-8 bg-slate-800 rounded-full text-slate-400 flex items-center justify-center hover:bg-slate-700 transition"><i class="fas fa-times"></i></button>
+        <button onclick="closeGastoModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700 transition"><i class="fas fa-times"></i></button>
       </div>
       <form id="gasto-form" onsubmit="submitGasto(event)">
-        <div class="bg-slate-950 rounded-2xl p-5 mb-4 border border-slate-800">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Monto</p>
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-4 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Monto</p>
           <div class="flex items-center">
             <span class="text-2xl font-bold text-rose-500 mr-2">S/.</span>
             <input type="number" step="0.01" min="0.01" id="gasto-monto" class="input-clean text-4xl font-extrabold text-white" placeholder="0.00" required>
           </div>
         </div>
-        <div class="bg-slate-950 rounded-2xl p-5 mb-5 border border-slate-800">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Concepto</p>
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-5 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Concepto</p>
           <input type="text" id="gasto-concepto" class="input-clean text-lg font-medium" placeholder="Ej: Supermercado, Netflix..." required>
         </div>
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-1">Categoría</p>
+        <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3 px-1">Categoría</p>
         <div class="flex overflow-x-auto pb-4 pt-1 gap-3 hide-scrollbar -mx-6 px-6" id="categorias-container"></div>
         <div id="presupuesto-bar-container" class="mb-6 hidden px-1">
           <div class="flex justify-between text-xs font-semibold mb-2">
-            <span class="text-slate-400">Restante en presupuesto</span>
+            <span class="text-zinc-400">Restante en presupuesto</span>
             <span id="presupuesto-restante-text" class="text-emerald-400">S/. 0.00</span>
           </div>
-          <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
             <div id="presupuesto-bar" class="h-full rounded-full transition-all duration-500 bg-emerald-500" style="width: 100%"></div>
           </div>
         </div>
@@ -245,25 +246,25 @@
 
   <!-- MODAL INGRESO (Responsivo) -->
   <div id="ingreso-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-slate-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-slate-700/50 shadow-2xl">
-      <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-6 md:hidden"></div>
+    <div class="bg-zinc-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold text-white">Registrar Ingreso</h3>
-        <button onclick="closeIngresoModal()" class="w-8 h-8 bg-slate-800 rounded-full text-slate-400 flex items-center justify-center hover:bg-slate-700"><i class="fas fa-times"></i></button>
+        <button onclick="closeIngresoModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
       </div>
       <form id="ingreso-form" onsubmit="submitIngreso(event)">
-        <div class="bg-slate-950 rounded-2xl p-5 mb-4 border border-slate-800">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Monto</p>
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-4 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Monto</p>
           <div class="flex items-center">
             <span class="text-2xl font-bold text-emerald-400 mr-2">S/.</span>
             <input type="number" step="0.01" min="0.01" id="ingreso-monto" class="input-clean text-4xl font-extrabold text-white" placeholder="0.00" required>
           </div>
         </div>
-        <div class="bg-slate-950 rounded-2xl p-5 mb-6 border border-slate-800">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Fuente</p>
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-6 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Fuente</p>
           <input type="text" id="ingreso-fuente" class="input-clean text-lg font-medium" placeholder="Ej: Salario, Venta, Regalo..." required>
         </div>
-        <button type="submit" id="btn-submit-ingreso" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-4 rounded-2xl shadow-[0_4px_15px_rgba(16,185,129,0.3)] transition-all">
+        <button type="submit" id="btn-submit-ingreso" class="w-full bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-bold py-4 rounded-2xl shadow-[0_4px_15px_rgba(16,185,129,0.3)] transition-all">
           Confirmar Ingreso
         </button>
       </form>
@@ -272,26 +273,26 @@
 
   <!-- MODAL PRESUPUESTO (Responsivo) -->
   <div id="presupuesto-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-slate-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-slate-700/50 shadow-2xl">
-      <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-6 md:hidden"></div>
+    <div class="bg-zinc-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-2xl font-bold text-white">Límite Mensual</h3>
-        <button onclick="closePresupuestoModal()" class="w-8 h-8 bg-slate-800 rounded-full text-slate-400 flex items-center justify-center hover:bg-slate-700"><i class="fas fa-times"></i></button>
+        <button onclick="closePresupuestoModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
       </div>
       <form id="presupuesto-form" onsubmit="submitPresupuesto(event)">
-        <div class="bg-slate-950 rounded-2xl p-4 mb-4 border border-slate-800 flex items-center">
+        <div class="bg-zinc-950 rounded-2xl p-4 mb-4 border border-zinc-800 flex items-center">
           <select id="presupuesto-categoria" class="input-clean font-semibold text-lg" onchange="onPresupuestoCategoriaChange()"></select>
-          <i class="fas fa-chevron-down text-slate-500 text-sm ml-2 pointer-events-none"></i>
+          <i class="fas fa-chevron-down text-zinc-500 text-sm ml-2 pointer-events-none"></i>
         </div>
-        <div class="bg-slate-950 rounded-2xl p-5 mb-6 border border-slate-800">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Límite S/.</p>
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-6 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Límite S/.</p>
           <div class="flex items-center">
             <span class="text-2xl font-bold text-emerald-400 mr-2">S/.</span>
             <input type="number" step="0.01" min="0.01" id="presupuesto-limite" class="input-clean text-4xl font-extrabold text-white" placeholder="0.00" required>
           </div>
         </div>
         <p id="presupuesto-existente-hint" class="text-emerald-400 text-xs font-medium mb-4 hidden text-center"></p>
-        <button type="submit" id="btn-submit-presupuesto" class="w-full bg-slate-100 hover:bg-white text-slate-900 font-bold py-4 rounded-2xl shadow-[0_4px_15px_rgba(255,255,255,0.1)] transition-all">
+        <button type="submit" id="btn-submit-presupuesto" class="w-full bg-zinc-100 hover:bg-white text-zinc-900 font-bold py-4 rounded-2xl shadow-[0_4px_15px_rgba(255,255,255,0.1)] transition-all">
           Guardar Límite
         </button>
       </form>
@@ -300,32 +301,32 @@
 
   <!-- MODAL STATS (Responsivo) -->
   <div id="stats-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-slate-900 w-full md:max-w-2xl md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe h-[85vh] md:h-[75vh] flex flex-col animate-slide-up border border-slate-700/50 shadow-2xl">
-      <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
+    <div class="bg-zinc-900 w-full md:max-w-2xl md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe h-[85vh] md:h-[75vh] flex flex-col animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
       <div class="flex justify-between items-center mb-6 flex-shrink-0">
         <h3 class="text-2xl font-bold text-white">Estadísticas Detalladas</h3>
-        <button onclick="closeStatsModal()" class="w-8 h-8 bg-slate-800 rounded-full text-slate-400 flex items-center justify-center hover:bg-slate-700"><i class="fas fa-times"></i></button>
+        <button onclick="closeStatsModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
       </div>
       <div class="flex-1 overflow-y-auto hide-scrollbar pb-6 grid md:grid-cols-2 gap-8 items-start">
         <!-- Izquierda: Gráfica -->
         <div class="flex flex-col gap-6">
           <div class="flex gap-4">
-            <div class="flex-1 bg-slate-950/50 rounded-2xl p-4 border border-slate-800 text-center">
-              <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ingresos</p>
+            <div class="flex-1 bg-zinc-950/50 rounded-2xl p-4 border border-zinc-800 text-center">
+              <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Ingresos</p>
               <p id="stats-total-ingresos" class="text-lg font-bold text-emerald-400">S/. 0.00</p>
             </div>
-            <div class="flex-1 bg-slate-950/50 rounded-2xl p-4 border border-slate-800 text-center">
-              <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Gastos</p>
+            <div class="flex-1 bg-zinc-950/50 rounded-2xl p-4 border border-zinc-800 text-center">
+              <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Gastos</p>
               <p id="stats-total-gastos" class="text-lg font-bold text-rose-400">S/. 0.00</p>
             </div>
           </div>
-          <div class="relative h-56 w-full flex justify-center bg-slate-950/30 rounded-3xl p-4 border border-slate-800">
+          <div class="relative h-56 w-full flex justify-center bg-zinc-950/30 rounded-3xl p-4 border border-zinc-800">
             <canvas id="statsChart"></canvas>
           </div>
         </div>
         <!-- Derecha: Desglose -->
         <div>
-          <h4 class="text-sm font-bold text-slate-300 mb-4 px-1">Desglose por Categoría</h4>
+          <h4 class="text-sm font-bold text-zinc-300 mb-4 px-1">Desglose por Categoría</h4>
           <div id="stats-categorias-container" class="space-y-4 pr-1"></div>
         </div>
       </div>
@@ -692,7 +693,7 @@
               </div>
               <span class="text-sm font-bold text-gray-200">${formatearMoneda(item.total)}</span>
             </div>
-            <div class="progress-bar rounded-full h-2 bg-slate-700 overflow-hidden">
+            <div class="progress-bar rounded-full h-2 bg-zinc-700 overflow-hidden">
               <div class="progress-fill h-full rounded-full transition-all duration-500" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
             </div>
           </div>`;
