@@ -273,9 +273,7 @@
             <i class="fas fa-plus-circle"></i> Nueva Meta
           </button>
         </div>
-        <div id="metas-container" class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-          <!-- Renderizado en JS -->
-        </div>
+        <div id="metas-container" class="space-y-4"></div>
       </div>
 
       <!-- PRESUPUESTOS SECTION -->
@@ -1850,7 +1848,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v240';
+    const APP_VERSION = 'v250';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
