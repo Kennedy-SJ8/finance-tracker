@@ -320,6 +320,22 @@
 
   <!-- MODAL GASTO (Responsivo: Centrado en Desktop) -->
   
+  <!-- MODAL ELIMINAR REGISTRO -->
+  <div id="delete-modal" class="fixed inset-0 modal-overlay z-[60] hidden items-center justify-center backdrop-blur-sm">
+    <div class="bg-zinc-900 w-11/12 max-w-sm rounded-[2rem] p-6 border border-zinc-700/50 shadow-2xl transition-all duration-200" id="delete-modal-content">
+      <div class="w-16 h-16 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-2xl mx-auto mb-4 border border-rose-500/20">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+      <h3 class="text-xl font-bold text-white text-center mb-2">¿Eliminar registro?</h3>
+      <p class="text-zinc-400 text-sm text-center mb-6 leading-relaxed">Esta acción borrará el gasto/ingreso permanentemente y tus saldos se recalcularán.</p>
+      
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3.5 rounded-xl transition-colors">Cancelar</button>
+        <button onclick="ejecutarEliminacion()" id="btn-confirm-delete" class="flex-1 bg-rose-500 hover:bg-rose-400 text-white font-bold py-3.5 rounded-xl transition-colors shadow-[0_0_20px_rgba(244,63,94,0.3)]">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL TRANSFERIR A META -->
   <div id="transfer-meta-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
     <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
@@ -1021,6 +1037,49 @@ let isSyncing = false;
       }).join('');
     }
 
+        let movimientoAEliminar = null;
+
+    function confirmarEliminar(id) {
+      movimientoAEliminar = id;
+      const modal = document.getElementById('delete-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+      movimientoAEliminar = null;
+      const modal = document.getElementById('delete-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function ejecutarEliminacion() {
+      if (!movimientoAEliminar) return;
+      
+      const btn = document.getElementById('btn-confirm-delete');
+      const textOrg = btn.textContent;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      btn.disabled = true;
+
+      try {
+        const { error } = await supabaseClient.from('movimientos').delete().eq('id', movimientoAEliminar).eq('usuario', currentUser);
+        if (error) throw error;
+        
+        mostrarToast('Registro eliminado', 'success');
+        closeDeleteModal();
+        
+        // Forzar actualización inmediata
+        window.lastDataHash = ''; 
+        cargarDashboard();
+      } catch (err) {
+        console.error(err);
+        mostrarToast('Error al eliminar', 'error');
+      } finally {
+        btn.innerHTML = textOrg;
+        btn.disabled = false;
+      }
+    }
+
     function renderizarMovimientos(lista) {
       const container = document.getElementById('movimientos-container');
       if (!lista || lista.length === 0) {
@@ -1040,20 +1099,23 @@ let isSyncing = false;
         } catch(e){}
 
         return `
-          <div class="bg-[#121214] border border-zinc-800/80 rounded-[2rem] p-5 flex items-center gap-5 shadow-lg hover:border-zinc-700 transition-colors cursor-pointer active:scale-[0.98]">
+          <div class="bg-[#121214] border border-zinc-800/80 rounded-[2rem] p-4 flex items-center gap-4 shadow-lg hover:border-zinc-700 transition-colors">
             <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner" style="background-color: ${cat.color}15; border: 1px solid ${cat.color}30">
               ${cat.emoji}
             </div>
-            <div class="flex-1 min-w-0">
+            <div class="flex-1 min-w-0 pr-1">
               <div class="flex justify-between items-center mb-1">
-                <p class="font-bold text-zinc-100 truncate text-[16px]">${m.concepto}</p>
-                <p class="font-black ${colorMonto} shrink-0 text-[16px] tracking-tight">${signo}${formatearMoneda(m.monto)}</p>
+                <p class="font-bold text-zinc-100 truncate text-[15px]">${m.concepto}</p>
+                <p class="font-black ${colorMonto} shrink-0 text-[15px] tracking-tight">${signo}${formatearMoneda(m.monto)}</p>
               </div>
-              <div class="flex justify-between items-center text-[13px]">
+              <div class="flex justify-between items-center text-[12px]">
                 <span class="font-semibold truncate" style="color: ${cat.color}">${cat.nombre}</span>
-                <span class="text-zinc-500 font-medium shrink-0 flex items-center gap-1.5"><i class="far fa-clock text-[10px]"></i> ${fechaStr}</span>
+                <span class="text-zinc-500 font-medium shrink-0 flex items-center gap-1"><i class="far fa-clock text-[10px]"></i> ${fechaStr}</span>
               </div>
             </div>
+            <button onclick="confirmarEliminar('${m.id}')" class="w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 transition-colors shrink-0 shadow-inner active:scale-95">
+              <i class="fas fa-trash-alt text-sm"></i>
+            </button>
           </div>
         `;
       }).join('');
@@ -1603,7 +1665,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v140';
+    const APP_VERSION = 'v150';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
