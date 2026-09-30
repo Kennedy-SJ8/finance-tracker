@@ -313,7 +313,34 @@
   </nav>
 
   <!-- MODAL GASTO (Responsivo: Centrado en Desktop) -->
-  <div id="gasto-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
+  
+  <!-- MODAL NUEVA META -->
+  <div id="meta-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
+    <div class="bg-zinc-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-white">Nueva Meta</h3>
+        <button onclick="closeMetaModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="meta-form" onsubmit="submitMeta(event)">
+        <div class="bg-zinc-950 rounded-2xl p-5 mb-4 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Objetivo (S/.)</p>
+          <div class="flex items-center">
+            <span class="text-2xl font-bold text-emerald-500 mr-2">S/.</span>
+            <input type="number" step="0.01" min="1" id="meta-monto" class="input-clean text-4xl font-extrabold text-white" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="bg-zinc-950 rounded-2xl p-4 mb-6 border border-zinc-800">
+          <input type="text" id="meta-nombre" class="input-clean w-full text-lg text-white font-medium" placeholder="Ej. Viaje a Cancún ✈️" required autocomplete="off">
+        </div>
+        <button type="submit" id="btn-submit-meta" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+          Crear Meta
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="gasto-modal"  class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
     <div class="bg-zinc-900 w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
       <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
@@ -701,6 +728,23 @@
       }
     }
 
+    
+    function setFiltroTiempo(filtro) {
+      filtroTiempo = filtro;
+      ['semana', 'mes', 'todo'].forEach(f => {
+        const btn = document.getElementById(`btn-filtro-${f}`);
+        if (!btn) return;
+        if (f === filtro) {
+          btn.classList.add('bg-zinc-800', 'text-white', 'shadow-md');
+          btn.classList.remove('text-zinc-400');
+        } else {
+          btn.classList.remove('bg-zinc-800', 'text-white', 'shadow-md');
+          btn.classList.add('text-zinc-400');
+        }
+      });
+      cargarDashboard();
+    }
+    
     let isSyncing = false;
     async function cargarDashboard() {
       if (isSyncing) return;
@@ -1373,7 +1417,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v75';
+    const APP_VERSION = 'v80';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
