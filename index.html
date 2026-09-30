@@ -851,9 +851,9 @@
     }
 
     function formatearMoneda(valor) {
-      return new Intl.NumberFormat('es-US', {
+      return new Intl.NumberFormat('es-PE', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'PEN',
         minimumFractionDigits: 2
       }).format(valor || 0);
     }
