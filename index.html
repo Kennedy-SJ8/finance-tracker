@@ -1203,7 +1203,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v12';
+    const APP_VERSION = 'v15';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
@@ -1213,31 +1213,25 @@
       });
     }
   
-    // ARREGLO PARA EL TECLADO DE IOS
-    if (window.visualViewport) {
-      const viewport = window.visualViewport;
-      viewport.addEventListener('resize', () => {
-        // Solo en móviles
-        if (window.innerWidth < 768) {
-          const modals = document.querySelectorAll('.animate-slide-up');
-          const isKeyboardOpen = viewport.height < window.innerHeight - 50;
-          
-          modals.forEach(modal => {
-            if (isKeyboardOpen) {
-              // Teclado abierto: empujar el modal hacia arriba
-              const offset = window.innerHeight - viewport.height;
-              modal.style.transform = `translateY(-${offset - 20}px)`;
-              modal.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-            } else {
-              // Teclado cerrado: restaurar
-              modal.style.transform = 'translateY(0)';
+
+    // ARREGLO DEFINITIVO PARA EL TECLADO DE IOS (Usando margin-bottom)
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', (e) => {
+            const modal = e.target.closest('.animate-slide-up');
+            if (modal && window.innerWidth < 768) {
+                modal.style.transition = 'margin-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                modal.style.marginBottom = '250px';
             }
-          });
-        }
-      });
-    }
-  
-    // LÓGICA DE SWIPE-TO-CLOSE (Deslizar para cerrar) ESTILO NATIVO IOS
+        });
+        input.addEventListener('blur', (e) => {
+            const modal = e.target.closest('.animate-slide-up');
+            if (modal && window.innerWidth < 768) {
+                modal.style.marginBottom = '0px';
+            }
+        });
+    });
+
+    // LÓGICA DE SWIPE-TO-CLOSE ESTILO NATIVO IOS CON ANIMACIÓN DE TRANSICIÓN
     document.querySelectorAll('.animate-slide-up').forEach(modalContent => {
         let startY = 0;
         let currentY = 0;
@@ -1252,21 +1246,16 @@
             return null;
         };
 
-        // En pantallas táctiles
         modalContent.addEventListener('touchstart', (e) => {
-            // No iniciar drag si el usuario está interactuando con las categorías (scroll horizontal)
             if (e.target.closest('.overflow-x-auto') || e.target.nodeName === 'INPUT') return;
-            
             startY = e.touches[0].clientY;
             isDragging = true;
-            modalContent.style.transition = 'none'; // Quitar suavidad para que el dedo lo mueva 1:1
+            modalContent.style.transition = 'none';
         }, { passive: true });
 
         modalContent.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             currentY = e.touches[0].clientY - startY;
-            
-            // Solo permitir arrastrar hacia abajo (mayor a 0)
             if (currentY > 0) {
                 modalContent.style.transform = `translateY(${currentY}px)`;
             }
@@ -1276,28 +1265,33 @@
             if (!isDragging) return;
             isDragging = false;
             
-            // Restaurar la animación suave
-            modalContent.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-            
-            // Si el usuario lo arrastró más de 80 píxeles hacia abajo, se cierra
-            if (currentY > 80) {
-                const closeFn = getCloseFunction();
-                if (closeFn) {
-                    closeFn();
-                } else {
-                    modalContent.parentElement.classList.add('hidden');
-                    modalContent.parentElement.classList.remove('flex');
-                }
+            if (currentY > 100) {
+                // ANIMACIÓN DE TRANSICIÓN: Deslizar hacia abajo del todo y luego ocultar
+                modalContent.style.transition = 'transform 0.25s ease-out';
+                modalContent.style.transform = `translateY(100vh)`;
+                
+                setTimeout(() => {
+                    const closeFn = getCloseFunction();
+                    if (closeFn) {
+                        closeFn();
+                    } else {
+                        modalContent.parentElement.classList.add('hidden');
+                        modalContent.parentElement.classList.remove('flex');
+                    }
+                    modalContent.style.transform = ''; // Resetear
+                    currentY = 0;
+                }, 250);
+            } else {
+                // Rebotar arriba
+                modalContent.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                modalContent.style.transform = ''; 
+                currentY = 0;
             }
-            
-            // Si no llegó al límite o ya se cerró, lo devolvemos a su lugar
-            modalContent.style.transform = ''; 
-            currentY = 0;
         });
     });
-
   </script>
 </body>
+
 
 
 
