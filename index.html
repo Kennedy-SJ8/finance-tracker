@@ -61,6 +61,33 @@
       to { opacity: 1; }
     }
 
+    
+    /* Shadcn Border Beam effect para la tarjeta principal */
+    .border-beam-card {
+      position: relative;
+      z-index: 1;
+    }
+    .border-beam-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      background: conic-gradient(from 0deg, transparent 70%, rgba(16, 185, 129, 0.8) 100%);
+      animation: spin 4s linear infinite;
+      z-index: -2;
+    }
+    .border-beam-card::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      background: var(--bg-surface);
+      border-radius: inherit;
+      z-index: -1;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
     /* Modal Overlay */
     .modal-overlay {
       background: rgba(2, 6, 23, 0.8);
@@ -99,10 +126,16 @@
       </div>
       
       <!-- Desktop Actions (Ocultos en móvil) -->
-      <div class="hidden md:flex items-center gap-4">
-        <button onclick="openStatsModal()" class="px-4 py-2 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium transition-colors text-sm"><i class="fas fa-chart-pie mr-2"></i>Stats</button>
-        <button onclick="openIngresoModal()" class="px-4 py-2 rounded-xl bg-zinc-800 text-emerald-400 hover:bg-zinc-700 font-bold transition-colors text-sm"><i class="fas fa-plus mr-2"></i>Ingreso</button>
-        <button onclick="openGastoModal()" class="px-5 py-2 rounded-xl bg-emerald-500 text-zinc-950 hover:bg-emerald-400 font-bold transition-colors text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)]"><i class="fas fa-minus mr-2"></i>Gasto</button>
+      <div class="hidden md:flex items-center gap-3">
+        <button onclick="openStatsModal()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-zinc-50 h-10 px-4 py-2 text-zinc-300">
+          <i class="fas fa-chart-pie mr-2"></i>Stats
+        </button>
+        <button onclick="openIngresoModal()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-zinc-800 bg-[#18181b] hover:bg-zinc-800 hover:text-zinc-50 h-10 px-4 py-2 text-zinc-100 shadow-sm">
+          <i class="fas fa-arrow-up text-emerald-500 mr-2"></i>Ingreso
+        </button>
+        <button onclick="openGastoModal()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-zinc-50 text-zinc-900 hover:bg-zinc-200 h-10 px-4 py-2 shadow-sm">
+          <i class="fas fa-arrow-down mr-2"></i>Gasto
+        </button>
       </div>
       
       <!-- Botón Perfil (Móvil) -->
@@ -118,7 +151,7 @@
     <!-- COLUMNA IZQUIERDA (Desktop: 5 columnas) -->
     <div class="md:col-span-5 space-y-8">
       <!-- BALANCE CARD -->
-      <div class="relative overflow-hidden rounded-[2rem] card-gradient p-8 shadow-2xl shadow-emerald-900/10">
+      <div class="relative overflow-hidden rounded-[2rem] border-beam-card p-8 shadow-2xl shadow-emerald-900/10">
         <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
         <p class="text-sm font-medium text-zinc-300 mb-1 relative z-10">Balance Disponible</p>
         <h2 id="balance" class="text-5xl font-extrabold text-white tracking-tight mb-8 relative z-10">S/. 0.00</h2>
@@ -519,6 +552,18 @@
             <span class="font-semibold ${colorMonto}">${signo}${formatearMoneda(m.monto)}</span>
           </div>`;
       }).join('');
+    }
+
+    
+    function openActionSheet() {
+      const sheet = document.getElementById('action-sheet');
+      sheet.classList.remove('hidden');
+      sheet.classList.add('flex');
+    }
+    function closeActionSheet() {
+      const sheet = document.getElementById('action-sheet');
+      sheet.classList.add('hidden');
+      sheet.classList.remove('flex');
     }
 
     function openGastoModal() {
