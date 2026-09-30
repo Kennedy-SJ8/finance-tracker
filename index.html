@@ -832,6 +832,15 @@ let isSyncing = false;
         const { data: movsBrutos, error: errMovs } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser).order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
         
+        // Evitar parpadeos visuales si no hay datos nuevos
+        const dataHash = JSON.stringify(movsBrutos) + filtroTiempo;
+        if (window.lastDataHash === dataHash) {
+            isSyncing = false;
+            document.querySelectorAll('.fa-sync-alt').forEach(icon => icon.classList.remove('fa-spin', 'text-emerald-400'));
+            return;
+        }
+        window.lastDataHash = dataHash;
+        
         // Filtro de tiempo en JS
         const ahora = new Date();
         const movs = movsBrutos.filter(m => {
@@ -896,7 +905,15 @@ let isSyncing = false;
         });
 
         renderizarPresupuestos(presupuestos);
-                actualizarInsight(ingresos, gastos, presupuestos);
+                // Insight Inteligente y Rico en Datos
+        let porcentajeGasto = ingresos > 0 ? ((gastos / ingresos) * 100).toFixed(1) : 0;
+        let insightMsg = '';
+        if (porcentajeGasto > 90) insightMsg = `⚠️ ¡Alerta! Has gastado el ${porcentajeGasto}% de tus ingresos. Frena tus gastos innecesarios.`;
+        else if (porcentajeGasto > 60) insightMsg = `📊 Llevas gastado el ${porcentajeGasto}% de tus ingresos. Vas a buen ritmo, pero cuida los gastos hormiga.`;
+        else insightMsg = `✨ ¡Excelente! Has gastado solo el ${porcentajeGasto}% de tus ingresos. Tienes buen margen para abonar a tus Metas.`;
+        
+        document.getElementById('insight-text').innerHTML = insightMsg;
+
 
         // Render Dashboard Chart
         const porCategoria = Object.keys(gastosPorCategoria).map(cat => ({ categoria: cat, total: gastosPorCategoria[cat] })).sort((a,b) => b.total - a.total);
@@ -1546,7 +1563,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v120';
+    const APP_VERSION = 'v130';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
