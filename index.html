@@ -406,7 +406,7 @@
   <script>
     const SUPABASE_URL = 'https://qrvuzgnuawekmyhatspw.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFydnV6Z251YXdla215aGF0c3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTQwMzIsImV4cCI6MjEwNjI5MDAzMn0.4idMtCo1qcxYB_9S5i6TkJEVaAdmZkiV5WtmHBtIWzk';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const CATEGORIAS = {
       alimentacion: { emoji: '🍔', color: '#F59E0B', nombre: 'Alimentación' },
@@ -470,10 +470,10 @@
 
     async function cargarDashboard() {
       try {
-        const { data: movs, error: errMovs } = await supabase.from('movimientos').select('*').order('fecha', { ascending: false });
+        const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
         
-        const { data: presups, error: errPresups } = await supabase.from('presupuestos').select('*');
+        const { data: presups, error: errPresups } = await supabaseClient.from('presupuestos').select('*');
         if (errPresups) throw errPresups;
 
         let ingresos = 0;
@@ -665,7 +665,7 @@
       };
 
       try {
-        const { error } = await supabase.from('presupuestos').upsert([payload], { onConflict: 'categoria' });
+        const { error } = await supabaseClient.from('presupuestos').upsert([payload], { onConflict: 'categoria' });
         if (error) throw error;
         mostrarToast('Presupuesto guardado', 'success');
         closePresupuestoModal();
@@ -699,7 +699,7 @@
       container.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const { data: movs, error } = await supabase.from('movimientos').select('*');
+        const { data: movs, error } = await supabaseClient.from('movimientos').select('*');
         if (error) throw error;
 
         let ingresos = 0;
@@ -806,7 +806,7 @@
       };
 
       try {
-        const { error } = await supabase.from('movimientos').insert([payload]);
+        const { error } = await supabaseClient.from('movimientos').insert([payload]);
         if (error) throw error;
         mostrarToast('Gasto registrado', 'success');
         closeGastoModal();
@@ -836,7 +836,7 @@
       };
 
       try {
-        const { error } = await supabase.from('movimientos').insert([payload]);
+        const { error } = await supabaseClient.from('movimientos').insert([payload]);
         if (error) throw error;
         mostrarToast('Ingreso registrado', 'success');
         closeIngresoModal();
