@@ -960,7 +960,7 @@
       container.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const { data: movs, error } = await supabaseClient.from('movimientos').select('*');
+        const { data: movs, error } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser);
         if (error) throw error;
 
         let ingresos = 0;
