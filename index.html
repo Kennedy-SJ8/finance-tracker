@@ -531,6 +531,14 @@
         const gastosPorCategoria = {};
 
         movs.forEach(m => {
+          // Auto-corrector inteligente para errores de atajos
+          const conceptoLower = (m.concepto || '').toLowerCase();
+          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber')) {
+            m.categoria = 'transporte';
+          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena')) {
+            m.categoria = 'alimentacion';
+          }
+          
           if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
           if (m.tipo === 'Gasto') {
             const amt = Number(m.monto);
@@ -795,6 +803,14 @@
         let agrupados = {};
 
         movs.forEach(m => {
+          // Auto-corrector inteligente para errores de atajos
+          const conceptoLower = (m.concepto || '').toLowerCase();
+          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber')) {
+            m.categoria = 'transporte';
+          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena')) {
+            m.categoria = 'alimentacion';
+          }
+          
           if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
           if (m.tipo === 'Gasto') {
             const amt = Number(m.monto);
