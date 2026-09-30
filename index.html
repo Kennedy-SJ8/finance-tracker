@@ -169,6 +169,12 @@
       
       <!-- Desktop Actions (Ocultos en móvil) -->
       <div class="hidden md:flex items-center gap-3">
+        <button onclick="cargarDashboard()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-zinc-50 h-10 w-10 text-zinc-300">
+          <i class="fas fa-sync-alt sync-icon-class"></i>
+        </button>
+        <button onclick="cerrarSesion()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-rose-500/20 text-rose-500 h-10 w-10 bg-rose-500/10 border border-rose-500/20">
+          <i class="fas fa-lock"></i>
+        </button>
         <button onclick="openStatsModal()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-zinc-50 h-10 px-4 py-2 text-zinc-300">
           <i class="fas fa-chart-pie mr-2"></i>Stats
         </button>
@@ -183,7 +189,7 @@
       <!-- Botones Perfil / Sync (Móvil) -->
       <div class="md:hidden flex items-center gap-2">
         <button onclick="cargarDashboard()" class="w-10 h-10 rounded-full bg-zinc-800/80 backdrop-blur-md border border-zinc-700/50 flex items-center justify-center text-zinc-300 hover:text-white transition-colors active:scale-95 shadow-sm">
-          <i id="sync-icon" class="fas fa-sync-alt"></i>
+          <i class="fas fa-sync-alt"></i>
         </button>
         <button onclick="cerrarSesion()" class="w-10 h-10 rounded-full bg-rose-500/10 backdrop-blur-md border border-rose-500/20 flex items-center justify-center text-rose-500 hover:bg-rose-500/30 transition-colors active:scale-95 shadow-sm">
           <i class="fas fa-lock"></i>
@@ -677,8 +683,7 @@
     async function cargarDashboard() {
       if (isSyncing) return;
       isSyncing = true;
-      const syncIcon = document.getElementById('sync-icon');
-      if (syncIcon) syncIcon.classList.add('fa-spin', 'text-emerald-400');
+      document.querySelectorAll('.fa-sync-alt').forEach(icon => icon.classList.add('fa-spin', 'text-emerald-400'));
       try {
         const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser).order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
@@ -729,8 +734,7 @@
         console.error('Error:', error);
         mostrarToast('Error al cargar datos', 'error');
       } finally {
-        const syncIcon = document.getElementById('sync-icon');
-        if (syncIcon) syncIcon.classList.remove('fa-spin', 'text-emerald-400');
+        document.querySelectorAll('.fa-sync-alt').forEach(icon => icon.classList.remove('fa-spin', 'text-emerald-400'));
         isSyncing = false;
       }
     }
@@ -1184,5 +1188,28 @@
       }, 3000);
     }
   </script>
+
+  <script>
+    // FORZAR ACTUALIZACIÓN Y LIMPIEZA DE CACHÉ EN IOS
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.update();
+        }
+      });
+    }
+    
+    // Si la versión local es vieja, forzar recarga dura
+    const APP_VERSION = 'v8';
+    if (localStorage.getItem('app_version') !== APP_VERSION) {
+      localStorage.setItem('app_version', APP_VERSION);
+      caches.keys().then((names) => {
+        for (let name of names) caches.delete(name);
+      }).then(() => {
+        window.location.reload(true);
+      });
+    }
+  </script>
 </body>
+
 </html>
