@@ -929,6 +929,21 @@
 
 
 let isSyncing = false;
+    
+    function actualizarSaludo() {
+      const hora = new Date().getHours();
+      let saludo = 'Hola';
+      if (hora >= 5 && hora < 12) saludo = 'Buenos días';
+      else if (hora >= 12 && hora < 19) saludo = 'Buenas tardes';
+      else saludo = 'Buenas noches';
+      
+      const usuarioCapitalized = currentUser ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1) : '';
+      const emoji = hora >= 5 && hora < 19 ? '☀️' : '🌙';
+      
+      const elem = document.getElementById('greeting-text');
+      if (elem) elem.textContent = `${saludo}, ${usuarioCapitalized} ${emoji}`;
+    }
+
     async function cargarDashboard() {
       if (isSyncing) return;
       isSyncing = true;
@@ -1848,7 +1863,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v250';
+    const APP_VERSION = 'v270';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
