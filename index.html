@@ -404,6 +404,14 @@
       cargarDashboard();
     });
 
+    
+    // Refresco automático continuo (Polling) cada 3.5 segundos para que los cambios de Atajos se sientan "al instante"
+    setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        cargarDashboard();
+      }
+    }, 3500);
+
     document.addEventListener('DOMContentLoaded', () => {
       cargarDashboard();
 
@@ -505,7 +513,10 @@
       }
     }
 
+    let isSyncing = false;
     async function cargarDashboard() {
+      if (isSyncing) return;
+      isSyncing = true;
       const syncIcon = document.getElementById('sync-icon');
       if (syncIcon) syncIcon.classList.add('fa-spin', 'text-emerald-400');
       try {
@@ -552,6 +563,7 @@
       } finally {
         const syncIcon = document.getElementById('sync-icon');
         if (syncIcon) syncIcon.classList.remove('fa-spin', 'text-emerald-400');
+        isSyncing = false;
       }
     }
 
