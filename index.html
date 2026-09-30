@@ -775,7 +775,55 @@
       cargarDashboard();
     }
     
-    let isSyncing = false;
+    
+    let dashboardChartInstance = null;
+    function renderizarDashboardChart(lista) {
+      const container = document.getElementById('dashboard-chart-container');
+      const ctx = document.getElementById('dashboardChart');
+      
+      if (!lista || lista.length === 0) {
+        container.classList.add('hidden');
+        if(dashboardChartInstance) dashboardChartInstance.destroy();
+        return;
+      }
+      
+      container.classList.remove('hidden');
+      if(dashboardChartInstance) dashboardChartInstance.destroy();
+      
+      // Safety check in case Chart is failing to load from CDN
+      if (typeof Chart === 'undefined') {
+        container.innerHTML = '<p class="text-zinc-500 text-sm flex items-center h-full justify-center">Error cargando Chart.js</p>';
+        return;
+      }
+
+      dashboardChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
+          datasets: [{
+            data: lista.map(i => i.total),
+            backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: { 
+              display: true, 
+              position: 'right',
+              labels: { color: '#a1a1aa', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+
+let isSyncing = false;
     async function cargarDashboard() {
       if (isSyncing) return;
       isSyncing = true;
@@ -853,53 +901,6 @@
         // Render Dashboard Chart
         const porCategoria = Object.keys(gastosPorCategoria).map(cat => ({ categoria: cat, total: gastosPorCategoria[cat] })).sort((a,b) => b.total - a.total);
         renderizarDashboardChart(porCategoria);
-
-    let dashboardChartInstance = null;
-    function renderizarDashboardChart(lista) {
-      const container = document.getElementById('dashboard-chart-container');
-      const ctx = document.getElementById('dashboardChart');
-      
-      if (!lista || lista.length === 0) {
-        container.classList.add('hidden');
-        if(dashboardChartInstance) dashboardChartInstance.destroy();
-        return;
-      }
-      
-      container.classList.remove('hidden');
-      if(dashboardChartInstance) dashboardChartInstance.destroy();
-      
-      // Safety check in case Chart is failing to load from CDN
-      if (typeof Chart === 'undefined') {
-        container.innerHTML = '<p class="text-zinc-500 text-sm flex items-center h-full justify-center">Error cargando Chart.js</p>';
-        return;
-      }
-
-      dashboardChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
-          datasets: [{
-            data: lista.map(i => i.total),
-            backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
-            borderWidth: 0,
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%',
-          plugins: {
-            legend: { 
-              display: true, 
-              position: 'right',
-              labels: { color: '#a1a1aa', font: { size: 10 } }
-            }
-          }
-        }
-      });
-    }
-
         renderizarMovimientos(movs.slice(0, 15));
       } catch (error) {
         console.error('Error:', error);
@@ -1545,7 +1546,7 @@
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v110';
+    const APP_VERSION = 'v120';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
