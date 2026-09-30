@@ -851,14 +851,12 @@
     }
 
     function closeGastoModal() {
-      forceCleanupModal('gasto-modal');
-      const modal = document.getElementById('gasto-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('gasto-form').reset();
-      resetCategoryChips();
-      document.getElementById('presupuesto-bar-container').classList.add('hidden');
-    }
+      closeModalWithAnimation('gasto-modal', () => {
+        document.getElementById('gasto-form').reset();
+        resetCategoryChips();
+        document.getElementById('presupuesto-bar-container').classList.add('hidden');
+      });
+      }
 
     function openIngresoModal() {
       const modal = document.getElementById('ingreso-modal');
@@ -868,12 +866,10 @@
     }
 
     function closeIngresoModal() {
-      forceCleanupModal('ingreso-modal');
-      const modal = document.getElementById('ingreso-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('ingreso-form').reset();
-    }
+      closeModalWithAnimation('ingreso-modal', () => {
+        document.getElementById('ingreso-form').reset();
+      });
+      }
 
     // ----- PRESUPUESTOS: crear / editar -----
 
@@ -885,10 +881,9 @@
     }
 
     function closePresupuestoModal() {
-      forceCleanupModal('presupuesto-modal');
-      const modal = document.getElementById('presupuesto-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      closeModalWithAnimation('presupuesto-modal', () => {
+        document.getElementById('presupuesto-form').reset();
+      });
       document.getElementById('presupuesto-form').reset();
       document.getElementById('presupuesto-existente-hint').classList.add('hidden');
     }
@@ -945,19 +940,32 @@
 
     
     // === LIMPIEZA TOTAL AL CERRAR CUALQUIER MODAL ===
-    function forceCleanupModal(modalId) {
-      if (document.activeElement) document.activeElement.blur(); // Fuerza al teclado a bajar
+    function closeModalWithAnimation(modalId, callback) {
+      if (document.activeElement) document.activeElement.blur(); // Bajar teclado
       
       const modal = document.getElementById(modalId);
-      if (modal) {
-        // Encontrar el contenido animado
-        const content = modal.querySelector('.animate-slide-up');
-        if (content) {
+      if (!modal) return;
+      
+      const content = modal.querySelector('.animate-slide-up');
+      if (content) {
+        // Aplicar la animación de bajada (ocultar)
+        content.style.animation = 'slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          // Resetear estado para cuando se vuelva a abrir
+          content.style.animation = '';
           content.style.marginBottom = '0px';
           content.style.transform = '';
-          content.style.transition = '';
-        }
+          if (callback) callback();
+        }, 280); // Ligeramente antes de que termine para que no parpadee
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (callback) callback();
       }
+    }
     }
 
     // ----- STATS -----
@@ -970,10 +978,7 @@
     }
 
     function closeStatsModal() {
-      forceCleanupModal('stats-modal');
-      const modal = document.getElementById('stats-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      closeModalWithAnimation('stats-modal');
     }
 
     async function loadStats() {
@@ -1224,7 +1229,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v40';
+    const APP_VERSION = 'v45';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
