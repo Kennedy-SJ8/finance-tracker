@@ -441,6 +441,8 @@
 
     let categoriaSeleccionada = 'alimentacion';
     let presupuestos = [];
+    let filtroTiempo = 'mes';
+    let metasAhorro = [];
 
     // === SISTEMA DE PERFILES ===
     const USUARIOS = {
@@ -685,8 +687,32 @@
       isSyncing = true;
       document.querySelectorAll('.fa-sync-alt').forEach(icon => icon.classList.add('fa-spin', 'text-emerald-400'));
       try {
-        const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser).order('fecha', { ascending: false });
+        const { data: movsBrutos, error: errMovs } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser).order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
+        
+        // Filtro de tiempo en JS
+        const ahora = new Date();
+        const movs = movsBrutos.filter(m => {
+          if (filtroTiempo === 'todo') return true;
+          const fechaMov = new Date(m.fecha);
+          if (filtroTiempo === 'mes') {
+            return fechaMov.getMonth() === ahora.getMonth() && fechaMov.getFullYear() === ahora.getFullYear();
+          }
+          if (filtroTiempo === 'semana') {
+            // Lógica simple de últimos 7 días
+            const difDias = (ahora - fechaMov) / (1000 * 60 * 60 * 24);
+            return difDias <= 7;
+          }
+        });
+        
+        // Cargar Metas (ignorando error si la tabla no existe aún)
+        try {
+          const { data: metas } = await supabaseClient.from('metas_ahorro').select('*').eq('usuario', currentUser);
+          if (metas) {
+            metasAhorro = metas;
+            renderizarMetas();
+          }
+        } catch (e) { console.log('Tabla metas no lista'); }
         
         const { data: presups, error: errPresups } = await supabaseClient.from('presupuestos').select('*').eq('usuario', currentUser);
         if (errPresups) throw errPresups;
@@ -938,6 +964,106 @@
     }
 
     
+    
+    // === METAS DE AHORRO ===
+    function openMetaModal() {
+      const modal = document.getElementById('meta-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeMetaModal() {
+      closeModalWithAnimation('meta-modal', () => {
+        document.getElementById('meta-form').reset();
+      });
+    }
+
+    async function submitMeta(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-meta');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
+
+      const payload = {
+        nombre_meta: document.getElementById('meta-nombre').value,
+        monto_objetivo: parseFloat(document.getElementById('meta-monto').value),
+        monto_actual: 0,
+        usuario: currentUser
+      };
+
+      try {
+        const { error } = await supabaseClient.from('metas_ahorro').insert([payload]);
+        if (error) throw error;
+        mostrarToast('Meta creada', 'success');
+        closeMetaModal();
+        cargarDashboard();
+      } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('Error al crear meta (Revisa SQL)', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+      }
+    }
+
+    function renderizarMetas() {
+      const container = document.getElementById('metas-container');
+      if (!metasAhorro || metasAhorro.length === 0) {
+        container.innerHTML = `<div class="col-span-full bg-zinc-950/50 p-6 rounded-3xl border border-zinc-800 border-dashed text-center">
+          <p class="text-zinc-500 font-medium">No tienes metas de ahorro. ¡Crea una para motivarte!</p>
+        </div>`;
+        return;
+      }
+
+      container.innerHTML = metasAhorro.map(meta => {
+        const porcentaje = Math.min((meta.monto_actual / meta.monto_objetivo) * 100, 100);
+        return `
+        <div class="bg-zinc-900 rounded-3xl p-5 border border-zinc-800 shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${meta.icono || '🎯'}</span>
+              <h3 class="font-bold text-white text-lg">${meta.nombre_meta}</h3>
+            </div>
+            <button onclick="addMontoMeta('${meta.id}')" class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/30 transition">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="flex justify-between items-end mb-2">
+            <div>
+              <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider">Ahorrado</p>
+              <p class="text-lg font-bold text-white">${formatearMoneda(meta.monto_actual)}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider">Meta</p>
+              <p class="text-sm font-bold text-zinc-400">${formatearMoneda(meta.monto_objetivo)}</p>
+            </div>
+          </div>
+          <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
+            <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${porcentaje}%"></div>
+          </div>
+        </div>
+        `;
+      }).join('');
+    }
+
+    async function addMontoMeta(id) {
+      const montoExtra = prompt('¿Cuánto dinero vas a transferir a esta meta? (S/.)');
+      if (!montoExtra || isNaN(montoExtra)) return;
+      
+      const meta = metasAhorro.find(m => m.id === id);
+      const nuevoMonto = Number(meta.monto_actual) + Number(montoExtra);
+
+      try {
+        const { error } = await supabaseClient.from('metas_ahorro').update({ monto_actual: nuevoMonto }).eq('id', id);
+        if (error) throw error;
+        mostrarToast('Ahorro sumado', 'success');
+        cargarDashboard();
+      } catch (err) {
+        mostrarToast('Error al sumar', 'error');
+      }
+    }
+
     // === LIMPIEZA TOTAL AL CERRAR CUALQUIER MODAL ===
     function closeModalWithAnimation(modalId, callback) {
       if (document.activeElement) document.activeElement.blur(); // Bajar teclado
@@ -1227,7 +1353,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v50';
+    const APP_VERSION = 'v60';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
