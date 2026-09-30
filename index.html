@@ -218,12 +218,19 @@
             </div>
             <p id="ingresos" class="text-lg font-bold text-emerald-400">S/. 0.00</p>
           </div>
-          <div class="bg-zinc-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
-            <div class="flex items-center gap-2 mb-1.5">
-              <div class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></div>
-              <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Gastos</p>
+          <div class="bg-zinc-900/60 rounded-2xl p-4 border border-white/5 backdrop-blur-sm relative overflow-hidden">
+            <div class="flex justify-between items-center mb-1.5">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]"></div>
+                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Gastos</p>
+              </div>
+              <span id="gastos-porcentaje" class="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-500 transition-colors">0%</span>
             </div>
-            <p id="gastos" class="text-lg font-bold text-rose-400">S/. 0.00</p>
+            <p id="gastos" class="text-lg font-bold text-rose-400 relative z-10">S/. 0.00</p>
+            <!-- Mini progress bar -->
+            <div class="absolute bottom-0 left-0 h-1 bg-zinc-800 w-full">
+              <div id="gastos-porcentaje-barra" class="h-full bg-rose-500 transition-all duration-700" style="width: 0%"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -964,7 +971,7 @@ let isSyncing = false;
 
         actualizarBalance(ingresos - gastos);
         actualizarIngresos(ingresos);
-        actualizarGastos(gastos);
+        actualizarGastos(gastos, ingresos);
 
         presupuestos = presups.map(p => {
           const gastado = gastosPorCategoria[(p.categoria || '').toLowerCase()] || 0;
@@ -1008,8 +1015,35 @@ let isSyncing = false;
       document.getElementById('ingresos').textContent = formatearMoneda(valor);
     }
 
-    function actualizarGastos(valor) {
-      document.getElementById('gastos').textContent = formatearMoneda(valor);
+    function actualizarGastos(gastos, ingresos) {
+      document.getElementById('gastos').textContent = formatearMoneda(gastos);
+      
+      const porcElem = document.getElementById('gastos-porcentaje');
+      const barraElem = document.getElementById('gastos-porcentaje-barra');
+      
+      if (!porcElem || !barraElem) return;
+      
+      if (ingresos > 0) {
+        const porcentaje = Math.min((gastos / ingresos) * 100, 100).toFixed(0);
+        porcElem.textContent = `${porcentaje}%`;
+        barraElem.style.width = `${porcentaje}%`;
+        
+        // Cambio de color según peligro
+        if (porcentaje > 85) {
+          porcElem.className = 'text-[10px] font-black px-1.5 py-0.5 rounded-md bg-rose-500 text-white transition-colors shadow-[0_0_10px_rgba(244,63,94,0.5)]';
+          barraElem.className = 'h-full bg-rose-500 transition-all duration-700 shadow-[0_0_8px_rgba(244,63,94,0.8)]';
+        } else if (porcentaje > 50) {
+          porcElem.className = 'text-[10px] font-black px-1.5 py-0.5 rounded-md bg-yellow-500/20 text-yellow-500 transition-colors';
+          barraElem.className = 'h-full bg-yellow-500 transition-all duration-700';
+        } else {
+          porcElem.className = 'text-[10px] font-black px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 transition-colors';
+          barraElem.className = 'h-full bg-emerald-400 transition-all duration-700';
+        }
+      } else {
+        porcElem.textContent = '0%';
+        barraElem.style.width = '0%';
+        porcElem.className = 'text-[10px] font-black px-1.5 py-0.5 rounded-md bg-zinc-800 text-zinc-500 transition-colors';
+      }
     }
 
     function renderizarPresupuestos(lista) {
@@ -1689,7 +1723,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v170';
+    const APP_VERSION = 'v180';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
