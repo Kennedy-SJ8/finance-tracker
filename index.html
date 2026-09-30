@@ -506,6 +506,8 @@
     }
 
     async function cargarDashboard() {
+      const syncIcon = document.getElementById('sync-icon');
+      if (syncIcon) syncIcon.classList.add('fa-spin', 'text-emerald-400');
       try {
         const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
@@ -547,6 +549,9 @@
       } catch (error) {
         console.error('Error:', error);
         mostrarToast('Error al cargar datos', 'error');
+      } finally {
+        const syncIcon = document.getElementById('sync-icon');
+        if (syncIcon) syncIcon.classList.remove('fa-spin', 'text-emerald-400');
       }
     }
 
