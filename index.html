@@ -692,10 +692,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkAuth();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
-      const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
-      const fechaElem = document.getElementById('fecha-actual');
-      if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
 
       setupCategoryChips();
       poblarSelectCategorias();
@@ -969,6 +966,7 @@ let isSyncing = false;
           }
         });
 
+        window.currentBalance = ingresos - gastos;
         actualizarBalance(ingresos - gastos);
         actualizarIngresos(ingresos);
         actualizarGastos(gastos, ingresos);
@@ -1260,14 +1258,12 @@ let isSyncing = false;
       try {
         const { error } = await supabaseClient.from('presupuestos').upsert([payload], { onConflict: 'categoria' });
         if (error) throw error;
+        window.lastDataHash = '';
         mostrarToast('Presupuesto guardado', 'success');
         closePresupuestoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
-      const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
-      const fechaElem = document.getElementById('fecha-actual');
-      if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
 
       } catch (error) {
         console.error('Error:', error);
@@ -1310,6 +1306,7 @@ let isSyncing = false;
       try {
         const { error } = await supabaseClient.from('metas_ahorro').insert([payload]);
         if (error) throw error;
+        window.lastDataHash = '';
         mostrarToast('Meta creada', 'success');
         closeMetaModal();
         cargarDashboard();
@@ -1391,11 +1388,33 @@ let isSyncing = false;
       const montoExtra = parseFloat(document.getElementById('transfer-meta-amount').value);
       
       const meta = metasAhorro.find(m => m.id === id);
+      
+      if (montoExtra > window.currentBalance) {
+        mostrarToast('No tienes saldo suficiente', 'error');
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+        return;
+      }
+      
       const nuevoMonto = Number(meta.monto_actual) + montoExtra;
 
       try {
-        const { error } = await supabaseClient.from('metas_ahorro').update({ monto_actual: nuevoMonto }).eq('id', id);
-        if (error) throw error;
+        // 1. Actualizar la meta
+        const { error: err1 } = await supabaseClient.from('metas_ahorro').update({ monto_actual: nuevoMonto }).eq('id', id);
+        if (err1) throw err1;
+        
+        // 2. Registrar el descuento como un Gasto para que cuadre el balance
+        const { error: err2 } = await supabaseClient.from('movimientos').insert([{
+           usuario: currentUser,
+           monto: montoExtra,
+           concepto: `Abono a Meta: ${meta.nombre_meta}`,
+           categoria: 'otro',
+           tipo: 'Gasto',
+           origen: 'web'
+        }]);
+        if (err2) throw err2;
+        
+        window.lastDataHash = ''; // Forzar actualización visual
         mostrarToast('Abono registrado', 'success');
         closeTransferMetaModal();
         cargarDashboard();
@@ -1626,10 +1645,7 @@ let isSyncing = false;
         closeGastoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
-      const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
-      const fechaElem = document.getElementById('fecha-actual');
-      if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
 
       } catch (error) {
         console.error('Error:', error);
@@ -1663,10 +1679,7 @@ let isSyncing = false;
         closeIngresoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
-      const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
-      const fechaElem = document.getElementById('fecha-actual');
-      if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
+
 
       } catch (error) {
         console.error('Error:', error);
@@ -1723,7 +1736,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v180';
+    const APP_VERSION = 'v190';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
