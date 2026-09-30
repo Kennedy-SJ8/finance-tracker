@@ -338,7 +338,7 @@
   
   <!-- MODAL RETIRAR DE META -->
   <div id="withdraw-meta-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+    <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl max-h-[90%] overflow-y-auto max-h-[90%] overflow-y-auto">
       <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold text-white">Retirar de Meta</h3>
@@ -386,7 +386,7 @@
 
   <!-- MODAL TRANSFERIR A META -->
   <div id="transfer-meta-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+    <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl max-h-[90%] overflow-y-auto max-h-[90%] overflow-y-auto">
       <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
       <div class="flex justify-between items-center mb-6">
         <h3 class="text-xl font-bold text-white">Abonar a Meta</h3>
@@ -1895,7 +1895,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v380';
+    const APP_VERSION = 'v390';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
@@ -1927,23 +1927,18 @@ let isSyncing = false;
 
 
 
-    // ELEVACIÓN GARANTIZADA DE MODALES PARA TECLADO IOS Y OCULTAMIENTO DE NAV
+    // TECLADO IOS: OCULTAR NAV Y HACER SCROLL SIN ROMPER LA PANTALLA
     document.querySelectorAll('input, select').forEach(input => {
         const elevate = (e) => {
             if (window.innerWidth < 768) {
-                // 1. Ocultar la barra de navegación inferior para que no quede flotando arriba del teclado
+                // 1. Ocultar la barra de navegación inferior
                 const bottomNav = document.querySelector('nav.fixed.bottom-0');
                 if (bottomNav) bottomNav.classList.add('translate-y-[150%]');
 
-                // 2. Elevar el modal creando el colchón invisible
-                const modalInner = e.target.closest('.animate-slide-up');
-                if (modalInner) {
-                    modalInner.style.transition = 'padding 0.3s ease-out';
-                    modalInner.style.paddingBottom = '40vh'; 
-                    setTimeout(() => {
-                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 50);
-                }
+                // 2. Hacer scroll dentro del modal si es necesario, sin inyectar espacio artificial
+                setTimeout(() => {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
             }
         };
         
@@ -1952,12 +1947,6 @@ let isSyncing = false;
         
         input.addEventListener('blur', (e) => {
             if (window.innerWidth < 768) {
-                const modalInner = e.target.closest('.animate-slide-up');
-                if (modalInner) {
-                    modalInner.style.paddingBottom = '';
-                }
-                
-                // Restaurar la barra de navegación solo si no tocamos otro input inmediatamente
                 setTimeout(() => {
                     if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
                         const bottomNav = document.querySelector('nav.fixed.bottom-0');
