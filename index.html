@@ -601,6 +601,7 @@
 
     function checkAuth() {
       if (currentUser && USUARIOS[currentUser]) {
+        if(typeof actualizarSaludo === 'function') actualizarSaludo();
         document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
         document.getElementById('fecha-actual').textContent = `Billetera de ${USUARIOS[currentUser].nombre}`;
         setTimeout(() => {
@@ -1863,7 +1864,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v280';
+    const APP_VERSION = 'v290';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
