@@ -1203,7 +1203,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v10';
+    const APP_VERSION = 'v11';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
@@ -1212,7 +1212,32 @@
         window.location.reload(true);
       });
     }
+  
+    // ARREGLO PARA EL TECLADO DE IOS
+    if (window.visualViewport) {
+      const viewport = window.visualViewport;
+      viewport.addEventListener('resize', () => {
+        // Solo en móviles
+        if (window.innerWidth < 768) {
+          const modals = document.querySelectorAll('.animate-slide-up');
+          const isKeyboardOpen = viewport.height < window.innerHeight - 50;
+          
+          modals.forEach(modal => {
+            if (isKeyboardOpen) {
+              // Teclado abierto: empujar el modal hacia arriba
+              const offset = window.innerHeight - viewport.height;
+              modal.style.transform = `translateY(-${offset - 20}px)`;
+              modal.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+            } else {
+              // Teclado cerrado: restaurar
+              modal.style.transform = 'translateY(0)';
+            }
+          });
+        }
+      });
+    }
   </script>
 </body>
+
 
 </html>
