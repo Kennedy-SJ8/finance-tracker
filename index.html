@@ -437,7 +437,7 @@
     <div class="bg-zinc-900 w-full md:max-w-2xl md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe h-[85vh] md:h-[75vh] flex flex-col animate-slide-up border border-zinc-700/50 shadow-2xl">
       <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
       <div class="flex justify-between items-center mb-6 flex-shrink-0">
-        <h3 class="text-2xl font-bold text-white">Estadísticas Detalladas</h3>
+        <h3 id="stats-titulo" class="text-2xl font-bold text-white">Estadísticas Detalladas</h3>
         <button onclick="closeStatsModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
       </div>
       <div class="flex-1 overflow-y-auto hide-scrollbar pb-6 grid md:grid-cols-2 gap-8 items-start relative">
@@ -1174,8 +1174,25 @@
       container.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const { data: movs, error } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser);
+        const { data: movsBrutos, error } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser);
         if (error) throw error;
+
+        const ahora = new Date();
+        const movs = movsBrutos.filter(m => {
+          if (filtroTiempo === 'todo') return true;
+          const fechaMov = new Date(m.fecha);
+          if (filtroTiempo === 'mes') {
+            return fechaMov.getMonth() === ahora.getMonth() && fechaMov.getFullYear() === ahora.getFullYear();
+          }
+          if (filtroTiempo === 'semana') {
+            const difDias = (ahora - fechaMov) / (1000 * 60 * 60 * 24);
+            return difDias <= 7;
+          }
+        });
+
+        // Actualizar título
+        const titulo = document.getElementById('stats-titulo');
+        if (titulo) titulo.textContent = `Estadísticas (${filtroTiempo.charAt(0).toUpperCase() + filtroTiempo.slice(1)})`;
 
         let ingresos = 0;
         let gastos = 0;
@@ -1417,7 +1434,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v80';
+    const APP_VERSION = 'v85';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
