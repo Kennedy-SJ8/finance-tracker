@@ -227,6 +227,13 @@
         </div>
       </div>
 
+      <!-- Filtro de Tiempo -->
+      <div class="flex bg-zinc-900/50 p-1 rounded-2xl border border-zinc-800/50 mb-6 mt-6">
+        <button onclick="setFiltroTiempo('semana')" id="btn-filtro-semana" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Semana</button>
+        <button onclick="setFiltroTiempo('mes')" id="btn-filtro-mes" class="flex-1 py-2 text-sm font-semibold bg-zinc-800 text-white shadow-md rounded-xl transition-all">Mes</button>
+        <button onclick="setFiltroTiempo('todo')" id="btn-filtro-todo" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Todo</button>
+      </div>
+
       <!-- WIDGET CONSEJO -->
       <div id="insight-box" class="bg-gradient-to-r from-[#18181b] to-zinc-900 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-800/50 shadow-lg transition-colors">
         <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
@@ -235,6 +242,19 @@
         <div class="flex-1">
           <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Insight Automático</p>
           <p id="insight-text" class="text-sm text-zinc-200 font-medium leading-snug">Analizando tus finanzas...</p>
+        </div>
+      </div>
+
+      <!-- METAS DE AHORRO -->
+      <div>
+        <div class="flex justify-between items-center mb-4 px-1 mt-2">
+          <h3 class="text-lg font-bold text-white tracking-tight">Metas de Ahorro</h3>
+          <button onclick="openMetaModal()" class="text-emerald-400 text-sm font-bold flex items-center gap-1 hover:text-emerald-300 transition-colors">
+            <i class="fas fa-plus-circle"></i> Nueva Meta
+          </button>
+        </div>
+        <div id="metas-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <!-- Renderizado en JS -->
         </div>
       </div>
 
@@ -1353,7 +1373,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v60';
+    const APP_VERSION = 'v75';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
