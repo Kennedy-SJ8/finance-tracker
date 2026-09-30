@@ -121,7 +121,7 @@
   <div class="fixed top-0 left-0 right-0 z-30 bg-black/60 backdrop-blur-xl border-b border-zinc-800/50 pt-12 pb-3 px-6 transition-all">
     <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div>
-        <p id="fecha-actual" class="text-xs text-emerald-400 font-bold tracking-widest uppercase mb-0.5">Mi Billetera</p>
+        <p id="fecha-actual" class="text-[13px] text-zinc-400 font-semibold mb-0.5">Cargando...</p>
         <h1 class="text-2xl font-black text-white tracking-tight">Hola, Kennedy 👋</h1>
       </div>
       
@@ -175,29 +175,13 @@
       </div>
 
       <!-- WIDGET CONSEJO -->
-      <div class="bg-gradient-to-r from-zinc-900 to-zinc-800/80 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-700/50 shadow-lg">
-        <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 shadow-inner border border-blue-500/20">
-           <i class="fas fa-lightbulb text-lg"></i>
+      <div id="insight-box" class="bg-gradient-to-r from-[#18181b] to-zinc-900 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-800/50 shadow-lg transition-colors">
+        <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+           <i id="insight-icon" class="fas fa-lightbulb text-xl"></i>
         </div>
-        <div>
-          <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-0.5">Insight Financiero</p>
-          <p class="text-sm text-zinc-300 font-medium leading-snug">Mantener tus <span class="text-white font-bold">gastos hormiga</span> bajo control te puede ahorrar hasta S/. 200 al mes.</p>
-        </div>
-      </div>
-
-
-      <!-- PRESUPUESTOS SECTION -->
-      <div>
-        <div class="flex justify-between items-center mb-4 px-1">
-          <h3 class="text-lg font-bold text-white tracking-tight">Presupuestos</h3>
-          <button onclick="openPresupuestoModal()" class="w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center hover:bg-zinc-700 transition-colors">
-            <i class="fas fa-plus text-sm"></i>
-          </button>
-        </div>
-        <div id="presupuestos-container" class="space-y-5">
-          <div class="glass-panel rounded-2xl p-6 flex justify-center">
-            <i class="fas fa-circle-notch fa-spin text-emerald-500 text-2xl"></i>
-          </div>
+        <div class="flex-1">
+          <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Insight Automático</p>
+          <p id="insight-text" class="text-sm text-zinc-200 font-medium leading-snug">Analizando tus finanzas...</p>
         </div>
       </div>
     </div>
@@ -395,7 +379,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
       const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
       const fechaElem = document.getElementById('fecha-actual');
       if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
@@ -441,6 +425,58 @@
         .join('');
     }
 
+    
+    function actualizarInsight(ingresos, gastos, presupuestos) {
+      const textElem = document.getElementById('insight-text');
+      const iconElem = document.getElementById('insight-icon');
+      const boxElem = document.getElementById('insight-box');
+      if (!textElem) return;
+
+      let mensaje = "";
+      let tipo = "info"; // warning, success, info
+      
+      const presupextExcedido = presupuestos.find(p => p.restante < 0);
+
+      if (gastos === 0 && ingresos === 0) {
+        mensaje = "Comienza a registrar tus movimientos para recibir consejos automáticos.";
+      } else if (gastos > ingresos && ingresos > 0) {
+        mensaje = `¡Alerta! Tus gastos superan tus ingresos por <span class="font-bold text-rose-400">S/. ${(gastos - ingresos).toFixed(2)}</span>.`;
+        tipo = "warning";
+      } else if (presupextExcedido) {
+        const catKey = (presupextExcedido.categoria || '').toLowerCase();
+        const catNombre = CATEGORIAS[catKey] ? CATEGORIAS[catKey].nombre : presupextExcedido.categoria;
+        mensaje = `¡Ojo! Has excedido tu límite en <span class="font-bold text-rose-400">${catNombre}</span>. Cuida ese presupuesto.`;
+        tipo = "warning";
+      } else if (ingresos > 0 && gastos <= ingresos) {
+        const ahorro = (((ingresos - gastos) / ingresos) * 100).toFixed(0);
+        if (ahorro > 20) {
+          mensaje = `¡Excelente! Vas ahorrando el <span class="font-bold text-emerald-400">${ahorro}%</span> de tus ingresos. Sigue así.`;
+          tipo = "success";
+        } else {
+          mensaje = `Vas por buen camino. Tienes <span class="font-bold text-emerald-400">S/. ${(ingresos - gastos).toFixed(2)}</span> de saldo a favor.`;
+          tipo = "success";
+        }
+      } else {
+        mensaje = "Tus finanzas están bajo control. ¡Sigue así!";
+      }
+
+      textElem.innerHTML = mensaje;
+
+      if (tipo === 'warning') {
+        iconElem.className = "fas fa-exclamation-triangle text-xl";
+        iconElem.parentElement.className = "w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 border border-rose-500/20";
+        boxElem.className = "bg-gradient-to-r from-[#18181b] to-rose-950/20 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-rose-900/30 shadow-lg transition-colors";
+      } else if (tipo === 'success') {
+        iconElem.className = "fas fa-star text-xl";
+        iconElem.parentElement.className = "w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20";
+        boxElem.className = "bg-gradient-to-r from-[#18181b] to-emerald-950/20 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-emerald-900/30 shadow-lg transition-colors";
+      } else {
+        iconElem.className = "fas fa-lightbulb text-xl";
+        iconElem.parentElement.className = "w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 border border-blue-500/20";
+        boxElem.className = "bg-gradient-to-r from-[#18181b] to-zinc-900 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-800/50 shadow-lg transition-colors";
+      }
+    }
+
     async function cargarDashboard() {
       try {
         const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').order('fecha', { ascending: false });
@@ -478,6 +514,7 @@
         });
 
         renderizarPresupuestos(presupuestos);
+        actualizarInsight(ingresos, gastos, presupuestos);
         renderizarMovimientos(movs.slice(0, 15));
       } catch (error) {
         console.error('Error:', error);
@@ -671,7 +708,7 @@
         closePresupuestoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
       const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
       const fechaElem = document.getElementById('fecha-actual');
       if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
@@ -843,7 +880,7 @@
         closeGastoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
       const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
       const fechaElem = document.getElementById('fecha-actual');
       if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
@@ -879,7 +916,7 @@
         closeIngresoModal();
         cargarDashboard();
 
-      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+      const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
       const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
       const fechaElem = document.getElementById('fecha-actual');
       if (fechaElem) fechaElem.textContent = fechaTexto.charAt(0).toUpperCase() + fechaTexto.slice(1);
