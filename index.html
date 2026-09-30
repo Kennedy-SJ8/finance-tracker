@@ -515,6 +515,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // Regla de mayúsculas (Title Case) obligatoria
+    function toTitleCase(str) {
+      if (!str) return '';
+      return str.toLowerCase().split(' ').map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }).join(' ');
+    }
+
     const SUPABASE_URL = 'https://qrvuzgnuawekmyhatspw.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFydnV6Z251YXdla215aGF0c3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTQwMzIsImV4cCI6MjEwNjI5MDAzMn0.4idMtCo1qcxYB_9S5i6TkJEVaAdmZkiV5WtmHBtIWzk';
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1681,7 +1689,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v160';
+    const APP_VERSION = 'v170';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
