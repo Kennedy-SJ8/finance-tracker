@@ -1895,7 +1895,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v350';
+    const APP_VERSION = 'v360';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
@@ -1925,6 +1925,24 @@ let isSyncing = false;
   
 
 
+
+
+    // ARREGLO DEFINITIVO Y PERFECTO PARA EL TECLADO DE IOS (Visual Viewport API)
+    // Esto asegura que los modales anclados abajo ('items-end') se sienten exactamente sobre el teclado sin adivinar píxeles.
+    if (window.visualViewport) {
+      const resizeHandler = () => {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+          modal.style.height = window.visualViewport.height + 'px';
+          // Para evitar que haga scroll extraño cuando se achica:
+          modal.scrollTop = 0; 
+        });
+      };
+      
+      window.visualViewport.addEventListener('resize', resizeHandler);
+      window.visualViewport.addEventListener('scroll', resizeHandler);
+      // Ejecutar una vez al inicio
+      resizeHandler();
+    }
 
     // LÓGICA DE SWIPE-TO-CLOSE ESTILO NATIVO IOS CON ANIMACIÓN DE TRANSICIÓN
     document.querySelectorAll('.animate-slide-up').forEach(modalContent => {
