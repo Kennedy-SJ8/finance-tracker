@@ -165,7 +165,7 @@
     <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div>
         <p id="fecha-actual" class="text-[12px] text-emerald-300 font-black uppercase tracking-[0.2em] mb-1 drop-shadow-md">Cargando...</p>
-        <h1 class="text-2xl font-black text-white tracking-tight">Hola, Kennedy 👋</h1>
+        <h1 class="text-2xl font-black text-white tracking-tight">Finanzas</h1>
       </div>
       
       <!-- Desktop Actions (Ocultos en móvil) -->
@@ -1376,11 +1376,11 @@ let isSyncing = false;
               <span class="text-2xl shrink-0 drop-shadow-sm">${meta.icono || '🎯'}</span>
               <h3 class="font-bold text-white text-lg truncate">${meta.nombre_meta}</h3>
             </div>
-            <div class="flex gap-1.5 shrink-0">
-              <button onclick="retirarMontoMeta('${meta.id}')" class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500/20 transition border border-rose-500/20 shadow-inner">
+            <div class="flex gap-2 shrink-0">
+              <button onclick="retirarMontoMeta('${meta.id}')" class="w-9 h-9 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500/20 transition border border-rose-500/20 shadow-inner active:scale-95">
                 <i class="fas fa-minus text-sm"></i>
               </button>
-              <button onclick="addMontoMeta('${meta.id}')" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/20 transition border border-emerald-500/20 shadow-inner">
+              <button onclick="addMontoMeta('${meta.id}')" class="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/20 transition border border-emerald-500/20 shadow-inner active:scale-95">
                 <i class="fas fa-plus text-sm"></i>
               </button>
             </div>
@@ -1850,7 +1850,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v230';
+    const APP_VERSION = 'v240';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
