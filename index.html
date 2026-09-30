@@ -851,6 +851,7 @@
     }
 
     function closeGastoModal() {
+      forceCleanupModal('gasto-modal');
       const modal = document.getElementById('gasto-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -867,6 +868,7 @@
     }
 
     function closeIngresoModal() {
+      forceCleanupModal('ingreso-modal');
       const modal = document.getElementById('ingreso-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -883,6 +885,7 @@
     }
 
     function closePresupuestoModal() {
+      forceCleanupModal('presupuesto-modal');
       const modal = document.getElementById('presupuesto-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -940,6 +943,23 @@
       }
     }
 
+    
+    // === LIMPIEZA TOTAL AL CERRAR CUALQUIER MODAL ===
+    function forceCleanupModal(modalId) {
+      if (document.activeElement) document.activeElement.blur(); // Fuerza al teclado a bajar
+      
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        // Encontrar el contenido animado
+        const content = modal.querySelector('.animate-slide-up');
+        if (content) {
+          content.style.marginBottom = '0px';
+          content.style.transform = '';
+          content.style.transition = '';
+        }
+      }
+    }
+
     // ----- STATS -----
 
     function openStatsModal() {
@@ -950,6 +970,7 @@
     }
 
     function closeStatsModal() {
+      forceCleanupModal('stats-modal');
       const modal = document.getElementById('stats-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -1203,7 +1224,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v15';
+    const APP_VERSION = 'v20';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
@@ -1219,14 +1240,14 @@
         input.addEventListener('focus', (e) => {
             const modal = e.target.closest('.animate-slide-up');
             if (modal && window.innerWidth < 768) {
-                modal.style.transition = 'margin-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
-                modal.style.marginBottom = '250px';
+                modal.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                modal.style.transform = 'translateY(-25vh)';
             }
         });
         input.addEventListener('blur', (e) => {
             const modal = e.target.closest('.animate-slide-up');
             if (modal && window.innerWidth < 768) {
-                modal.style.marginBottom = '0px';
+                modal.style.transform = '';
             }
         });
     });
@@ -1247,6 +1268,8 @@
         };
 
         modalContent.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.overflow-x-auto') || e.target.nodeName === 'INPUT') return;
+            if (document.activeElement) document.activeElement.blur(); // Ocultar teclado si arrastras
             if (e.target.closest('.overflow-x-auto') || e.target.nodeName === 'INPUT') return;
             startY = e.touches[0].clientY;
             isDragging = true;
