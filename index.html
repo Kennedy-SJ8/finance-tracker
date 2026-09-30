@@ -392,6 +392,18 @@
     let categoriaSeleccionada = 'alimentacion';
     let presupuestos = [];
 
+    
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        cargarDashboard();
+      }
+    });
+
+    // En iOS a veces focus funciona mejor cuando se vuelve a abrir la PWA
+    window.addEventListener('focus', () => {
+      cargarDashboard();
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
       cargarDashboard();
 
