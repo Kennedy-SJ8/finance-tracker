@@ -1488,7 +1488,26 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v90';
+    
+    const APP_VERSION = 'v100';
+    (function() {
+      const currentUrl = new URL(window.location.href);
+      const isBusted = currentUrl.searchParams.has('busted');
+      const savedVersion = localStorage.getItem('APP_VERSION');
+      
+      if (savedVersion !== APP_VERSION && !isBusted) {
+        localStorage.setItem('APP_VERSION', APP_VERSION);
+        if ('caches' in window) {
+          caches.keys().then(names => {
+            for (let name of names) caches.delete(name);
+          });
+        }
+        // Force reload from server with completely fresh timestamp
+        currentUrl.searchParams.set('busted', Date.now());
+        window.location.href = currentUrl.toString();
+      }
+    })();
+
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
