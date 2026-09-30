@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finance-tracker-v11';
+const CACHE_NAME = 'finance-tracker-v12';
 const ASSETS_TO_CACHE = [
   'https://kennedy-sj8.github.io/finance-tracker/',
   'https://kennedy-sj8.github.io/finance-tracker/index.html',
