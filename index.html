@@ -118,6 +118,45 @@
 </head>
 <body class="antialiased selection:bg-emerald-500/30">
 
+  <!-- PANTALLA DE BLOQUEO / LOGIN -->
+  <div id="login-screen" class="fixed inset-0 z-[100] bg-[#000000] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div id="login-header" class="text-center mb-10 transition-all">
+      <h1 class="text-3xl font-black text-white tracking-tight mb-2">FinanceTracker</h1>
+      <p class="text-zinc-400 text-sm">Selecciona tu perfil para entrar</p>
+    </div>
+    
+    <div id="perfiles-lista" class="flex gap-8 mb-8">
+      <!-- Renderizados por JS -->
+    </div>
+
+    <!-- PIN PAD -->
+    <div id="pin-pad" class="hidden flex-col items-center w-full max-w-xs">
+      <p id="pin-user-name" class="text-emerald-400 font-bold mb-6 uppercase tracking-[0.2em] text-[11px]"></p>
+      <div class="flex gap-4 mb-10">
+        <div class="w-4 h-4 rounded-full border-2 border-zinc-600 pin-dot transition-colors"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-zinc-600 pin-dot transition-colors"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-zinc-600 pin-dot transition-colors"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-zinc-600 pin-dot transition-colors"></div>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-x-6 gap-y-4 w-full px-6">
+        <button onclick="ingresarPin('1')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">1</button>
+        <button onclick="ingresarPin('2')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">2</button>
+        <button onclick="ingresarPin('3')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">3</button>
+        <button onclick="ingresarPin('4')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">4</button>
+        <button onclick="ingresarPin('5')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">5</button>
+        <button onclick="ingresarPin('6')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">6</button>
+        <button onclick="ingresarPin('7')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">7</button>
+        <button onclick="ingresarPin('8')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">8</button>
+        <button onclick="ingresarPin('9')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">9</button>
+        <button onclick="cancelarPin()" class="h-16 rounded-full text-zinc-500 text-[10px] uppercase font-bold tracking-widest hover:text-white active:scale-90 transition-all">Cancelar</button>
+        <button onclick="ingresarPin('0')" class="h-16 rounded-full bg-[#18181b] border border-zinc-800 text-2xl font-medium text-white hover:bg-zinc-800 active:scale-90 transition-all">0</button>
+        <button onclick="borrarPin()" class="h-16 rounded-full text-zinc-500 hover:text-white active:scale-90 transition-all"><i class="fas fa-backspace text-xl"></i></button>
+      </div>
+    </div>
+  </div>
+
+
 
 
   <!-- TOP HEADER RESPONSIVO -->
@@ -392,28 +431,144 @@
     let categoriaSeleccionada = 'alimentacion';
     let presupuestos = [];
 
+    // === SISTEMA DE PERFILES ===
+    const USUARIOS = {
+      'kennedy': { id: 'kennedy', nombre: 'Kennedy', pin: '1234', color: '#10b981', inicial: 'K' },
+      'invitado': { id: 'invitado', nombre: 'Invitado', pin: '0000', color: '#8b5cf6', inicial: 'I' }
+    };
+    let currentUser = localStorage.getItem('currentUser') || null;
+    let selectedUserForPin = null;
+    let currentPin = '';
+
+    function checkAuth() {
+      if (currentUser && USUARIOS[currentUser]) {
+        document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
+        document.getElementById('fecha-actual').textContent = `Billetera de ${USUARIOS[currentUser].nombre}`;
+        setTimeout(() => {
+           document.getElementById('login-screen').classList.add('hidden');
+           document.getElementById('login-screen').classList.remove('flex');
+        }, 500);
+        cargarDashboard();
+      } else {
+        renderProfiles();
+        document.getElementById('login-screen').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+        document.getElementById('login-screen').classList.add('flex');
+        document.getElementById('perfiles-lista').classList.remove('hidden');
+        document.getElementById('perfiles-lista').classList.add('flex');
+        document.getElementById('pin-pad').classList.add('hidden');
+        document.getElementById('pin-pad').classList.remove('flex');
+      }
+    }
+
+    function renderProfiles() {
+      const lista = document.getElementById('perfiles-lista');
+      lista.innerHTML = Object.values(USUARIOS).map(u => `
+        <button onclick="seleccionarPerfil('${u.id}')" class="flex flex-col items-center gap-3 hover:scale-105 transition-transform active:scale-95">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-black shadow-lg" style="background-color: ${u.color}20; color: ${u.color}; border: 2px solid ${u.color}40">
+            ${u.inicial}
+          </div>
+          <span class="text-zinc-300 font-bold tracking-wide">${u.nombre}</span>
+        </button>
+      `).join('');
+    }
+
+    function seleccionarPerfil(id) {
+      selectedUserForPin = USUARIOS[id];
+      currentPin = '';
+      actualizarPuntosPin();
+      document.getElementById('perfiles-lista').classList.add('hidden');
+      document.getElementById('perfiles-lista').classList.remove('flex');
+      document.getElementById('login-header').classList.add('hidden');
+      document.getElementById('pin-pad').classList.remove('hidden');
+      document.getElementById('pin-pad').classList.add('flex');
+      document.getElementById('pin-user-name').textContent = `Ingresa PIN para ${selectedUserForPin.nombre}`;
+    }
+
+    function ingresarPin(num) {
+      if (currentPin.length < 4) {
+        currentPin += num;
+        actualizarPuntosPin();
+        if (currentPin.length === 4) validarPin();
+      }
+    }
+
+    function borrarPin() {
+      if (currentPin.length > 0) {
+        currentPin = currentPin.slice(0, -1);
+        actualizarPuntosPin();
+      }
+    }
+
+    function cancelarPin() {
+      selectedUserForPin = null;
+      currentPin = '';
+      document.getElementById('pin-pad').classList.add('hidden');
+      document.getElementById('pin-pad').classList.remove('flex');
+      document.getElementById('perfiles-lista').classList.remove('hidden');
+      document.getElementById('perfiles-lista').classList.add('flex');
+      document.getElementById('login-header').classList.remove('hidden');
+    }
+
+    function actualizarPuntosPin() {
+      const dots = document.querySelectorAll('.pin-dot');
+      dots.forEach((dot, index) => {
+        if (index < currentPin.length) {
+          dot.classList.add('bg-white', 'border-white');
+          dot.classList.remove('border-zinc-600');
+        } else {
+          dot.classList.remove('bg-white', 'border-white');
+          dot.classList.add('border-zinc-600');
+        }
+      });
+    }
+
+    function validarPin() {
+      if (currentPin === selectedUserForPin.pin) {
+        localStorage.setItem('currentUser', selectedUserForPin.id);
+        currentUser = selectedUserForPin.id;
+        setTimeout(() => { checkAuth(); }, 300);
+      } else {
+        mostrarToast('PIN incorrecto', 'error');
+        currentPin = '';
+        actualizarPuntosPin();
+        const pad = document.getElementById('pin-pad');
+        pad.classList.add('animate-bounce');
+        setTimeout(() => pad.classList.remove('animate-bounce'), 500);
+      }
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('currentUser');
+      currentUser = null;
+      selectedUserForPin = null;
+      currentPin = '';
+      actualizarPuntosPin();
+      checkAuth();
+    }
+
+
     
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && currentUser) {
         cargarDashboard();
       }
     });
 
     // En iOS a veces focus funciona mejor cuando se vuelve a abrir la PWA
     window.addEventListener('focus', () => {
-      cargarDashboard();
+      if (currentUser) cargarDashboard();
     });
 
     
     // Refresco automático continuo (Polling) cada 3.5 segundos para que los cambios de Atajos se sientan "al instante"
     setInterval(() => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && currentUser) {
         cargarDashboard();
       }
     }, 3500);
 
     document.addEventListener('DOMContentLoaded', () => {
-      cargarDashboard();
+      checkAuth();
 
       const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'short' };
       const fechaTexto = new Date().toLocaleDateString('es-PE', opcionesFecha);
@@ -520,10 +675,10 @@
       const syncIcon = document.getElementById('sync-icon');
       if (syncIcon) syncIcon.classList.add('fa-spin', 'text-emerald-400');
       try {
-        const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').order('fecha', { ascending: false });
+        const { data: movs, error: errMovs } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser).order('fecha', { ascending: false });
         if (errMovs) throw errMovs;
         
-        const { data: presups, error: errPresups } = await supabaseClient.from('presupuestos').select('*');
+        const { data: presups, error: errPresups } = await supabaseClient.from('presupuestos').select('*').eq('usuario', currentUser);
         if (errPresups) throw errPresups;
 
         let ingresos = 0;
