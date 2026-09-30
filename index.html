@@ -194,7 +194,7 @@
             <i class="fas fa-plus text-sm"></i>
           </button>
         </div>
-        <div id="presupuestos-container" class="space-y-3">
+        <div id="presupuestos-container" class="bg-[#18181b] border border-zinc-800 rounded-3xl overflow-hidden divide-y divide-zinc-800 shadow-xl">
           <div class="glass-panel rounded-2xl p-6 flex justify-center">
             <i class="fas fa-circle-notch fa-spin text-emerald-500 text-2xl"></i>
           </div>
@@ -492,65 +492,80 @@
 
     function renderizarPresupuestos(lista) {
       const container = document.getElementById('presupuestos-container');
-
       if (!lista || lista.length === 0) {
-        container.innerHTML = '<div class="card p-4 text-center text-secondary text-sm">Sin presupuestos configurados. Toca "+" para crear uno.</div>';
+        container.innerHTML = '<div class="p-8 text-center text-zinc-500 font-medium text-sm">No hay presupuestos definidos</div>';
         return;
       }
-
       container.innerHTML = lista.map(p => {
         const catKey = (p.categoria || '').toLowerCase();
         const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
-        const porcentaje = p.monto_limite > 0
-          ? Math.min((p.monto_gastado / p.monto_limite) * 100, 100)
-          : 0;
-        const colorBarra = porcentaje >= 90 ? '#FF5252' : porcentaje >= 70 ? '#F59E0B' : '#00E699';
-
+        const color = cat.color;
+        let porcentaje = p.monto_limite > 0 ? (p.monto_gastado / p.monto_limite) * 100 : 0;
+        const excedido = p.restante < 0;
+        
         return `
-          <div class="card p-4">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-3">
-                <span class="text-xl">${cat.emoji}</span>
-                <div>
-                  <p class="font-medium">${cat.nombre}</p>
-                  <p class="text-secondary text-xs">${formatearMoneda(p.monto_gastado)} de ${formatearMoneda(p.monto_limite)}</p>
-                </div>
-              </div>
-              <span class="text-sm font-semibold" style="color: ${colorBarra}">${porcentaje.toFixed(0)}%</span>
+          <div class="p-4 sm:p-5 hover:bg-zinc-800/30 transition-colors">
+            <div class="flex justify-between items-center mb-3">
+               <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-lg shadow-inner">
+                    ${cat.emoji}
+                  </div>
+                  <div>
+                     <p class="font-bold text-zinc-100 text-sm">${cat.nombre}</p>
+                     <p class="text-[11px] font-medium text-zinc-500">${formatearMoneda(p.monto_gastado)} gastado</p>
+                  </div>
+               </div>
+               <div class="text-right">
+                  <p class="text-sm font-bold ${excedido ? 'text-rose-500' : ''}" style="${!excedido ? `color: ${color}` : ''}">${formatearMoneda(p.restante)}</p>
+                  <p class="text-[11px] font-medium text-zinc-500">restante de ${formatearMoneda(p.monto_limite)}</p>
+               </div>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${porcentaje}%; background-color: ${colorBarra}"></div>
+            <div class="flex items-center gap-3">
+               <div class="h-2 flex-1 bg-zinc-900 rounded-full overflow-hidden shadow-inner border border-zinc-800/50">
+                 <div class="h-full transition-all duration-1000 rounded-full ${excedido ? 'bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]' : ''}" style="width: ${Math.min(porcentaje, 100)}%; ${!excedido ? `background-color: ${color}` : ''}"></div>
+               </div>
+               <span class="text-[10px] font-bold ${excedido ? 'text-rose-500' : 'text-zinc-400'} w-8 text-right">${Math.round(porcentaje)}%</span>
             </div>
-          </div>`;
+          </div>
+        `;
       }).join('');
     }
 
     function renderizarMovimientos(lista) {
       const container = document.getElementById('movimientos-container');
-
       if (!lista || lista.length === 0) {
-        container.innerHTML = '<p class="text-secondary text-sm text-center">Sin movimientos recientes</p>';
+        container.innerHTML = '<div class="p-8 text-center text-zinc-500 font-medium text-sm">No hay movimientos recientes</div>';
         return;
       }
-
       container.innerHTML = lista.map(m => {
         const catKey = (m.categoria || '').toLowerCase();
         const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
-        const esIngreso = m.tipo === 'Ingreso';
-        const colorMonto = esIngreso ? 'text-emerald' : 'text-red-custom';
-        const signo = esIngreso ? '+' : '-';
-        const fecha = new Date(m.fecha);
-        const fechaStr = formatearFecha(fecha);
+        const signo = m.tipo === 'Ingreso' ? '+' : '-';
+        const colorMonto = m.tipo === 'Ingreso' ? 'text-emerald-400' : 'text-zinc-100';
+        
+        let fechaStr = m.fecha;
+        try { 
+          const obj = new Date(m.fecha);
+          if(!isNaN(obj)) fechaStr = obj.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' }); 
+        } catch(e){}
 
         return `
-          <div class="transaction-item">
-            <div class="category-icon" style="background-color: ${cat.color}20; color: ${cat.color}">${cat.emoji}</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-medium truncate">${m.concepto || m.nota || cat.nombre}</p>
-              <p class="text-secondary text-xs">${fechaStr}</p>
+          <div class="p-4 sm:p-5 flex items-center gap-4 hover:bg-zinc-800/50 transition-colors active:bg-zinc-800/80 cursor-pointer">
+            <div class="w-11 h-11 rounded-full flex items-center justify-center text-xl shrink-0 shadow-sm" style="background-color: ${cat.color}15; border: 1px solid ${cat.color}30">
+              ${cat.emoji}
             </div>
-            <span class="font-semibold ${colorMonto}">${signo}${formatearMoneda(m.monto)}</span>
-          </div>`;
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center mb-0.5">
+                <p class="font-bold text-zinc-100 truncate text-[15px]">${m.concepto}</p>
+                <p class="font-bold ${colorMonto} shrink-0 text-[15px] tracking-tight">${signo}${formatearMoneda(m.monto)}</p>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-medium truncate" style="color: ${cat.color}">${cat.nombre}</span>
+                <span class="text-zinc-500 font-medium shrink-0 flex items-center gap-1.5"><i class="far fa-clock text-[9px]"></i> ${fechaStr}</span>
+              </div>
+            </div>
+          </div>
+        `;
       }).join('');
     }
 
