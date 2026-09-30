@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
   <title>FinanceTracker Pro</title>
   <link rel="manifest" href="https://kennedy-sj8.github.io/finance-tracker/manifest.json?v=4">
   <meta name="theme-color" content="#020617">
@@ -1224,7 +1224,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v20';
+    const APP_VERSION = 'v30';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
