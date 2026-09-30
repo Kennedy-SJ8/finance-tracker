@@ -11,20 +11,29 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    
     :root {
-      --bg-primary: #0B1118;
-      --bg-card: #16202C;
-      --accent-emerald: #00E699;
-      --accent-red: #FF5252;
-      --text-primary: #FFFFFF;
-      --text-secondary: #8A99AD;
+      --bg-primary: #0F172A;
+      --bg-card: #1E293B;
+      --accent-emerald: #10B981;
+      --accent-red: #EF4444;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --border-color: #334155;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', sans-serif;
       background-color: var(--bg-primary);
       color: var(--text-primary);
+      padding-bottom: 90px;
     }
-    .card { background-color: var(--bg-card); border-radius: 16px; }
+    .card { 
+      background-color: var(--bg-card); 
+      border-radius: 20px; 
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
     .text-emerald { color: var(--accent-emerald); }
     .text-red-custom { color: var(--accent-red); }
     .text-secondary { color: var(--text-secondary); }
@@ -175,6 +184,9 @@
     .toast-info { background-color: rgba(59, 130, 246, 0.95); color: white; }
     ::-webkit-scrollbar { width: 0; }
   </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="min-h-screen pb-24">
 
@@ -727,35 +739,60 @@
       }
     }
 
+    let chartInstance = null;
     function renderizarStats(lista) {
       const container = document.getElementById('stats-categorias-container');
-
       if (!lista || lista.length === 0) {
         container.innerHTML = '<p class="text-secondary text-sm text-center">Aún no hay gastos registrados</p>';
+        if(chartInstance) chartInstance.destroy();
         return;
       }
 
       const maxTotal = Math.max(...lista.map(item => item.total));
-
       container.innerHTML = lista.map(item => {
         const catKey = (item.categoria || '').toLowerCase();
         const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
         const porcentaje = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
-
         return `
           <div>
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
-                <span class="text-lg">${cat.emoji}</span>
-                <span class="text-sm font-medium">${cat.nombre}</span>
+                <span class="text-xl p-2 rounded-lg" style="background-color: ${cat.color}20">${cat.emoji}</span>
+                <span class="text-sm font-semibold">${cat.nombre}</span>
               </div>
-              <span class="text-sm font-semibold">${formatearMoneda(item.total)}</span>
+              <span class="text-sm font-bold text-gray-200">${formatearMoneda(item.total)}</span>
             </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
+            <div class="progress-bar rounded-full h-2 bg-slate-700 overflow-hidden">
+              <div class="progress-fill h-full rounded-full transition-all duration-500" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
             </div>
           </div>`;
       }).join('');
+
+      // Update Chart
+      const ctx = document.getElementById('statsChart');
+      if(ctx) {
+        if(chartInstance) chartInstance.destroy();
+        chartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
+            datasets: [{
+              data: lista.map(i => i.total),
+              backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
+              borderWidth: 0,
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      }
     }
 
     function resetCategoryChips() {
