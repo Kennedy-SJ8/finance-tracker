@@ -1895,7 +1895,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v370';
+    const APP_VERSION = 'v380';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
@@ -1927,16 +1927,19 @@ let isSyncing = false;
 
 
 
-    // ELEVACIÓN GARANTIZADA DE MODALES PARA TECLADO IOS
-    document.querySelectorAll('.modal-overlay input, .modal-overlay select').forEach(input => {
+    // ELEVACIÓN GARANTIZADA DE MODALES PARA TECLADO IOS Y OCULTAMIENTO DE NAV
+    document.querySelectorAll('input, select').forEach(input => {
         const elevate = (e) => {
             if (window.innerWidth < 768) {
+                // 1. Ocultar la barra de navegación inferior para que no quede flotando arriba del teclado
+                const bottomNav = document.querySelector('nav.fixed.bottom-0');
+                if (bottomNav) bottomNav.classList.add('translate-y-[150%]');
+
+                // 2. Elevar el modal creando el colchón invisible
                 const modalInner = e.target.closest('.animate-slide-up');
                 if (modalInner) {
-                    // Crea un "colchón" invisible en la parte baja de la ventana
                     modalInner.style.transition = 'padding 0.3s ease-out';
                     modalInner.style.paddingBottom = '40vh'; 
-                    // Asegura que el input específico se desplace hacia el centro de la visión
                     setTimeout(() => {
                         e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 50);
@@ -1944,15 +1947,23 @@ let isSyncing = false;
             }
         };
         
-        // Se eleva al tocar (focus) y también al tipear (input) como mecanismo de seguridad extra
         input.addEventListener('focus', elevate);
         input.addEventListener('input', elevate);
         
-        // Cuando se cierra el teclado (blur), la ventana vuelve a la normalidad
         input.addEventListener('blur', (e) => {
-            const modalInner = e.target.closest('.animate-slide-up');
-            if (modalInner && window.innerWidth < 768) {
-                modalInner.style.paddingBottom = '';
+            if (window.innerWidth < 768) {
+                const modalInner = e.target.closest('.animate-slide-up');
+                if (modalInner) {
+                    modalInner.style.paddingBottom = '';
+                }
+                
+                // Restaurar la barra de navegación solo si no tocamos otro input inmediatamente
+                setTimeout(() => {
+                    if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+                        const bottomNav = document.querySelector('nav.fixed.bottom-0');
+                        if (bottomNav) bottomNav.classList.remove('translate-y-[150%]');
+                    }
+                }, 100);
             }
         });
     });
