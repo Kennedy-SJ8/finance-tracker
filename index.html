@@ -929,12 +929,20 @@ let isSyncing = false;
         const gastosPorCategoria = {};
 
         movs.forEach(m => {
-          // Auto-corrector inteligente para errores de atajos
+          // Auto-corrector inteligente extremo
           const conceptoLower = (m.concepto || '').toLowerCase();
-          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber')) {
+          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber') || conceptoLower.includes('bus')) {
             m.categoria = 'transporte';
-          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena')) {
+          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
             m.categoria = 'alimentacion';
+          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares')) {
+            m.categoria = 'tecnologia';
+          } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
+            m.categoria = 'entretenimiento';
+          } else if (conceptoLower.includes('ropa') || conceptoLower.includes('zapatos') || conceptoLower.includes('polo') || conceptoLower.includes('zapatillas') || conceptoLower.includes('casaca')) {
+            m.categoria = 'ropa';
+          } else if (conceptoLower.includes('pastillas') || conceptoLower.includes('medico') || conceptoLower.includes('farmacia') || conceptoLower.includes('clinica')) {
+            m.categoria = 'salud';
           }
           
           if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
@@ -1105,7 +1113,7 @@ let isSyncing = false;
             </div>
             <div class="flex-1 min-w-0 pr-1">
               <div class="flex justify-between items-center mb-1">
-                <p class="font-bold text-zinc-100 truncate text-[15px]">${m.concepto}</p>
+                <p class="font-bold text-zinc-100 truncate text-[15px]">${toTitleCase(m.concepto)}</p>
                 <p class="font-black ${colorMonto} shrink-0 text-[15px] tracking-tight">${signo}${formatearMoneda(m.monto)}</p>
               </div>
               <div class="flex justify-between items-center text-[12px]">
@@ -1429,12 +1437,20 @@ let isSyncing = false;
         let agrupados = {};
 
         movs.forEach(m => {
-          // Auto-corrector inteligente para errores de atajos
+          // Auto-corrector inteligente extremo
           const conceptoLower = (m.concepto || '').toLowerCase();
-          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber')) {
+          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber') || conceptoLower.includes('bus')) {
             m.categoria = 'transporte';
-          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena')) {
+          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
             m.categoria = 'alimentacion';
+          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares')) {
+            m.categoria = 'tecnologia';
+          } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
+            m.categoria = 'entretenimiento';
+          } else if (conceptoLower.includes('ropa') || conceptoLower.includes('zapatos') || conceptoLower.includes('polo') || conceptoLower.includes('zapatillas') || conceptoLower.includes('casaca')) {
+            m.categoria = 'ropa';
+          } else if (conceptoLower.includes('pastillas') || conceptoLower.includes('medico') || conceptoLower.includes('farmacia') || conceptoLower.includes('clinica')) {
+            m.categoria = 'salud';
           }
           
           if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
@@ -1554,7 +1570,7 @@ let isSyncing = false;
 
       const payload = {
         monto: parseFloat(document.getElementById('gasto-monto').value),
-        concepto: document.getElementById('gasto-concepto').value,
+        concepto: toTitleCase(document.getElementById('gasto-concepto').value),
         categoria: categoriaSeleccionada,
         tipo: 'Gasto',
         origen: 'web',
@@ -1665,7 +1681,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v150';
+    const APP_VERSION = 'v160';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
