@@ -327,6 +327,38 @@
 
   <!-- MODAL GASTO (Responsivo: Centrado en Desktop) -->
   
+  <!-- MODAL RETIRAR DE META -->
+  <div id="withdraw-meta-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
+    <div class="bg-zinc-900 w-full md:max-w-sm md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-zinc-700/50 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-white">Retirar de Meta</h3>
+        <button onclick="closeWithdrawMetaModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="withdraw-meta-form" onsubmit="submitWithdrawMeta(event)">
+        <input type="hidden" id="withdraw-meta-id">
+        <p id="withdraw-meta-name" class="text-zinc-400 text-sm mb-4 font-medium"></p>
+        
+        <div class="bg-zinc-950 rounded-2xl p-4 mb-4 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Monto a retirar</p>
+          <div class="flex items-center">
+            <span class="text-2xl font-bold text-rose-500 mr-2">S/.</span>
+            <input type="number" step="0.01" min="0.01" id="withdraw-meta-amount" class="input-clean text-4xl font-extrabold text-white w-full" placeholder="0.00" required>
+          </div>
+        </div>
+
+        <div class="bg-zinc-950 rounded-2xl p-4 mb-6 border border-zinc-800">
+          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Motivo de emergencia</p>
+          <input type="text" id="withdraw-meta-reason" class="input-clean text-lg text-white w-full placeholder-zinc-600" placeholder="Ej. Salud, Urgencia..." required>
+        </div>
+
+        <button type="submit" id="btn-submit-withdraw-meta" class="w-full bg-rose-500 hover:bg-rose-400 text-white font-bold text-lg py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+          Retirar Fondos
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL ELIMINAR REGISTRO -->
   <div id="delete-modal" class="fixed inset-0 modal-overlay z-[60] hidden items-center justify-center backdrop-blur-sm">
     <div class="bg-zinc-900 w-11/12 max-w-sm rounded-[2rem] p-6 border border-zinc-700/50 shadow-2xl transition-all duration-200" id="delete-modal-content">
@@ -1359,6 +1391,76 @@ let isSyncing = false;
       }).join('');
     }
 
+    
+    function retirarMontoMeta(id) {
+      const meta = metasAhorro.find(m => m.id === id);
+      if (!meta) return;
+      
+      document.getElementById('withdraw-meta-id').value = meta.id;
+      document.getElementById('withdraw-meta-name').textContent = `Origen: ${meta.nombre_meta} ${meta.icono || ''} (Disponible: S/. ${meta.monto_actual})`;
+      
+      const modal = document.getElementById('withdraw-meta-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeWithdrawMetaModal() {
+      closeModalWithAnimation('withdraw-meta-modal', () => {
+        document.getElementById('withdraw-meta-form').reset();
+      });
+    }
+
+    async function submitWithdrawMeta(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-withdraw-meta');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0 auto"></div>';
+
+      const id = document.getElementById('withdraw-meta-id').value;
+      const montoRetiro = parseFloat(document.getElementById('withdraw-meta-amount').value);
+      const motivo = document.getElementById('withdraw-meta-reason').value;
+      
+      const meta = metasAhorro.find(m => m.id === id);
+      
+      if (montoRetiro > Number(meta.monto_actual)) {
+        mostrarToast('La meta no tiene fondos suficientes', 'error');
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+        return;
+      }
+      
+      const nuevoMonto = Number(meta.monto_actual) - montoRetiro;
+
+      try {
+        // 1. Descontar de la meta
+        const { error: err1 } = await supabaseClient.from('metas_ahorro').update({ monto_actual: nuevoMonto }).eq('id', id);
+        if (err1) throw err1;
+        
+        // 2. Registrar el retiro como un Ingreso (el dinero vuelve al balance disponible)
+        const { error: err2 } = await supabaseClient.from('movimientos').insert([{
+           usuario: currentUser,
+           monto: montoRetiro,
+           concepto: `Retiro de Meta: ${meta.nombre_meta} - ${toTitleCase(motivo)}`,
+           categoria: 'ingreso',
+           tipo: 'Ingreso',
+           origen: 'web'
+        }]);
+        if (err2) throw err2;
+        
+        window.lastDataHash = ''; // Forzar actualización
+        mostrarToast('Retiro exitoso', 'success');
+        closeWithdrawMetaModal();
+        cargarDashboard();
+      } catch (err) {
+        console.error(err);
+        mostrarToast('Error al registrar retiro', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+      }
+    }
+
     function addMontoMeta(id) {
       const meta = metasAhorro.find(m => m.id === id);
       if (!meta) return;
@@ -1736,7 +1838,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v190';
+    const APP_VERSION = 'v200';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
