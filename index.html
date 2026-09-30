@@ -915,7 +915,8 @@
 
       const payload = {
         categoria: document.getElementById('presupuesto-categoria').value,
-        monto_limite: parseFloat(document.getElementById('presupuesto-limite').value)
+        monto_limite: parseFloat(document.getElementById('presupuesto-limite').value),
+        usuario: currentUser
       };
 
       try {
@@ -1095,7 +1096,8 @@
         concepto: document.getElementById('gasto-concepto').value,
         categoria: categoriaSeleccionada,
         tipo: 'Gasto',
-        origen: 'web'
+        origen: 'web',
+        usuario: currentUser
       };
 
       try {
@@ -1131,7 +1133,8 @@
         concepto: document.getElementById('ingreso-fuente').value,
         categoria: 'ingreso',
         tipo: 'Ingreso',
-        origen: 'web'
+        origen: 'web',
+        usuario: currentUser
       };
 
       try {
