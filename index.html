@@ -883,9 +883,8 @@
     function closePresupuestoModal() {
       closeModalWithAnimation('presupuesto-modal', () => {
         document.getElementById('presupuesto-form').reset();
+        document.getElementById('presupuesto-existente-hint').classList.add('hidden');
       });
-      document.getElementById('presupuesto-form').reset();
-      document.getElementById('presupuesto-existente-hint').classList.add('hidden');
     }
 
     function onPresupuestoCategoriaChange() {
@@ -965,7 +964,6 @@
         modal.classList.remove('flex');
         if (callback) callback();
       }
-    }
     }
 
     // ----- STATS -----
@@ -1229,7 +1227,7 @@
     }
     
     // Si la versión local es vieja, forzar recarga dura
-    const APP_VERSION = 'v45';
+    const APP_VERSION = 'v50';
     if (localStorage.getItem('app_version') !== APP_VERSION) {
       localStorage.setItem('app_version', APP_VERSION);
       caches.keys().then((names) => {
