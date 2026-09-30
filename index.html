@@ -234,6 +234,11 @@
         <button onclick="setFiltroTiempo('todo')" id="btn-filtro-todo" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Todo</button>
       </div>
 
+      <!-- Mini Gráfico Dashboard -->
+      <div id="dashboard-chart-container" class="relative h-56 w-full flex justify-center bg-gradient-to-br from-[#18181b] to-zinc-900 rounded-3xl p-4 border border-zinc-800/50 shadow-lg mb-6 hidden">
+        <canvas id="dashboardChart"></canvas>
+      </div>
+
       <!-- WIDGET CONSEJO -->
       <div id="insight-box" class="bg-gradient-to-r from-[#18181b] to-zinc-900 rounded-[1.5rem] p-5 flex items-center gap-4 mb-8 border border-zinc-800/50 shadow-lg transition-colors">
         <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
@@ -843,7 +848,58 @@
         });
 
         renderizarPresupuestos(presupuestos);
-        actualizarInsight(ingresos, gastos, presupuestos);
+                actualizarInsight(ingresos, gastos, presupuestos);
+
+        // Render Dashboard Chart
+        const porCategoria = Object.keys(gastosPorCategoria).map(cat => ({ categoria: cat, total: gastosPorCategoria[cat] })).sort((a,b) => b.total - a.total);
+        renderizarDashboardChart(porCategoria);
+
+    let dashboardChartInstance = null;
+    function renderizarDashboardChart(lista) {
+      const container = document.getElementById('dashboard-chart-container');
+      const ctx = document.getElementById('dashboardChart');
+      
+      if (!lista || lista.length === 0) {
+        container.classList.add('hidden');
+        if(dashboardChartInstance) dashboardChartInstance.destroy();
+        return;
+      }
+      
+      container.classList.remove('hidden');
+      if(dashboardChartInstance) dashboardChartInstance.destroy();
+      
+      // Safety check in case Chart is failing to load from CDN
+      if (typeof Chart === 'undefined') {
+        container.innerHTML = '<p class="text-zinc-500 text-sm flex items-center h-full justify-center">Error cargando Chart.js</p>';
+        return;
+      }
+
+      dashboardChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
+          datasets: [{
+            data: lista.map(i => i.total),
+            backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: { 
+              display: true, 
+              position: 'right',
+              labels: { color: '#a1a1aa', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
         renderizarMovimientos(movs.slice(0, 15));
       } catch (error) {
         console.error('Error:', error);
@@ -1489,7 +1545,7 @@
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v100';
+    const APP_VERSION = 'v110';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
