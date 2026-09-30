@@ -200,10 +200,17 @@
   </div>
 
   <!-- MAIN GRID CONTAINER (Responsivo) -->
-  <div class="max-w-5xl mx-auto px-5 pt-32 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+  <div class="max-w-5xl mx-auto px-5 pt-36 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
     
     <!-- COLUMNA IZQUIERDA (Desktop: 5 columnas) -->
     <div class="md:col-span-5 space-y-8">
+      
+      <!-- SALUDO Y ORDEN VISUAL -->
+      <div class="flex flex-col gap-0.5 -mb-2">
+        <p id="greeting-text" class="text-zinc-400 font-medium text-sm">Hola de nuevo 👋</p>
+        <h2 class="text-3xl font-black text-white tracking-tight">Tu Billetera</h2>
+      </div>
+
       <!-- BALANCE CARD -->
       <div class="relative overflow-hidden rounded-[2rem] border-beam-card p-8 shadow-2xl shadow-emerald-900/10">
         <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -1843,7 +1850,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v210';
+    const APP_VERSION = 'v220';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
