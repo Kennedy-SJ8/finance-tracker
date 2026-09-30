@@ -1135,9 +1135,14 @@ let isSyncing = false;
                      <p class="text-xs font-semibold text-zinc-500">${formatearMoneda(p.monto_gastado)} gastado</p>
                   </div>
                </div>
-               <div class="text-right">
-                  <p class="text-lg font-bold ${excedido ? 'text-rose-500' : ''}" style="${!excedido ? `color: ${color}` : ''}">${formatearMoneda(p.restante)}</p>
-                  <p class="text-xs font-semibold text-zinc-500 mt-0.5">restante de ${formatearMoneda(p.monto_limite)}</p>
+               <div class="flex items-center gap-3">
+                 <div class="text-right">
+                    <p class="text-lg font-bold ${excedido ? 'text-rose-500' : ''}" style="${!excedido ? `color: ${color}` : ''}">${formatearMoneda(p.restante)}</p>
+                    <p class="text-xs font-semibold text-zinc-500 mt-0.5">restante de ${formatearMoneda(p.monto_limite)}</p>
+                 </div>
+                 <button onclick="confirmarEliminar('${p.id}', 'presupuesto')" class="w-8 h-8 rounded-xl flex items-center justify-center text-zinc-500 bg-zinc-800/50 hover:bg-rose-500/10 hover:text-rose-500 transition-colors shrink-0 shadow-inner active:scale-95">
+                   <i class="fas fa-trash-alt text-xs"></i>
+                 </button>
                </div>
             </div>
             <div class="flex items-center gap-4">
@@ -1151,11 +1156,24 @@ let isSyncing = false;
       }).join('');
     }
 
-        let movimientoAEliminar = null;
+        let itemAEliminar = null;
+    let tipoEliminacion = null;
 
-    function confirmarEliminar(id) {
-      movimientoAEliminar = id;
+    function confirmarEliminar(id, tipo = 'movimiento') {
+      itemAEliminar = id;
+      tipoEliminacion = tipo;
       const modal = document.getElementById('delete-modal');
+      const titulo = document.getElementById('delete-modal-title');
+      const desc = document.getElementById('delete-modal-desc');
+      if (titulo && desc) {
+        if (tipo === 'presupuesto') {
+          titulo.textContent = 'Eliminar Presupuesto';
+          desc.textContent = '¿Estás seguro de que quieres eliminar este presupuesto?';
+        } else {
+          titulo.textContent = 'Eliminar Registro';
+          desc.textContent = '¿Estás seguro de que quieres eliminar este movimiento? Esta acción no se puede deshacer.';
+        }
+      }
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -1877,7 +1895,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v340';
+    const APP_VERSION = 'v350';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
@@ -1906,22 +1924,7 @@ let isSyncing = false;
     }
   
 
-    // ARREGLO DEFINITIVO PARA EL TECLADO DE IOS (Usando margin-bottom)
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', (e) => {
-            const modal = e.target.closest('.animate-slide-up');
-            if (modal && window.innerWidth < 768) {
-                modal.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                modal.style.transform = 'translateY(-25vh)';
-            }
-        });
-        input.addEventListener('blur', (e) => {
-            const modal = e.target.closest('.animate-slide-up');
-            if (modal && window.innerWidth < 768) {
-                modal.style.transform = '';
-            }
-        });
-    });
+
 
     // LÓGICA DE SWIPE-TO-CLOSE ESTILO NATIVO IOS CON ANIMACIÓN DE TRANSICIÓN
     document.querySelectorAll('.animate-slide-up').forEach(modalContent => {
