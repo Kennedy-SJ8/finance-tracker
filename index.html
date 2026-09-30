@@ -110,7 +110,10 @@
     }
     .input-clean:focus { ring: 0; outline: none; }
     
-    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 1.5rem); }
+    .pt-safe { padding-top: max(env(safe-area-inset-top, 0px) + 1.5rem, 4rem); }
+
   </style>
 </head>
 <body class="antialiased selection:bg-emerald-500/30">
@@ -118,10 +121,10 @@
 
 
   <!-- TOP HEADER RESPONSIVO -->
-  <div class="fixed top-0 left-0 right-0 z-30 bg-black/60 backdrop-blur-xl border-b border-zinc-800/50 pt-12 pb-3 px-6 transition-all">
+  <div class="fixed top-0 left-0 right-0 z-30 bg-black/60 backdrop-blur-xl border-b border-zinc-800/50 pt-safe pb-4 px-6 transition-all">
     <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div>
-        <p id="fecha-actual" class="text-[12px] text-emerald-400 font-black uppercase tracking-[0.2em] mb-1 drop-shadow-md">Cargando...</p>
+        <p id="fecha-actual" class="text-[12px] text-emerald-300 font-black uppercase tracking-[0.2em] mb-1 drop-shadow-md">Cargando...</p>
         <h1 class="text-2xl font-black text-white tracking-tight">Hola, Kennedy 👋</h1>
       </div>
       
