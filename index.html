@@ -200,7 +200,7 @@
   </div>
 
   <!-- MAIN GRID CONTAINER (Responsivo) -->
-  <div class="max-w-5xl mx-auto px-5 pt-36 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+  <div class="max-w-5xl mx-auto px-5 pt-28 pb-28 md:pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
     
     <!-- COLUMNA IZQUIERDA (Desktop: 5 columnas) -->
     <div class="md:col-span-5 space-y-8">
@@ -273,7 +273,7 @@
             <i class="fas fa-plus-circle"></i> Nueva Meta
           </button>
         </div>
-        <div id="metas-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div id="metas-container" class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           <!-- Renderizado en JS -->
         </div>
       </div>
@@ -1371,12 +1371,12 @@ let isSyncing = false;
         const porcentaje = Math.min((meta.monto_actual / meta.monto_objetivo) * 100, 100);
         return `
         <div class="bg-zinc-900 rounded-3xl p-5 border border-zinc-800 shadow-lg relative overflow-hidden">
-          <div class="flex justify-between items-start mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${meta.icono || '🎯'}</span>
-              <h3 class="font-bold text-white text-lg">${meta.nombre_meta}</h3>
+          <div class="flex justify-between items-center mb-4 gap-2">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="text-2xl shrink-0 drop-shadow-sm">${meta.icono || '🎯'}</span>
+              <h3 class="font-bold text-white text-lg truncate">${meta.nombre_meta}</h3>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-1.5 shrink-0">
               <button onclick="retirarMontoMeta('${meta.id}')" class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500/20 transition border border-rose-500/20 shadow-inner">
                 <i class="fas fa-minus text-sm"></i>
               </button>
@@ -1850,7 +1850,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v220';
+    const APP_VERSION = 'v230';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
