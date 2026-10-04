@@ -253,8 +253,8 @@
       <!-- Filtro de Tiempo -->
       <div class="flex bg-zinc-900/50 p-1 rounded-2xl border border-zinc-800/50 mb-6 mt-6">
         <button onclick="setFiltroTiempo('semana')" id="btn-filtro-semana" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Semana</button>
-        <button onclick="setFiltroTiempo('mes')" id="btn-filtro-mes" class="flex-1 py-2 text-sm font-semibold bg-zinc-800 text-white shadow-md rounded-xl transition-all">Mes</button>
-        <button onclick="setFiltroTiempo('todo')" id="btn-filtro-todo" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Todo</button>
+        <button onclick="setFiltroTiempo('mes')" id="btn-filtro-mes" class="flex-1 py-2 text-sm font-semibold text-zinc-400 rounded-xl transition-all">Mes</button>
+        <button onclick="setFiltroTiempo('todo')" id="btn-filtro-todo" class="flex-1 py-2 text-sm font-semibold bg-zinc-800 text-white shadow-md rounded-xl transition-all">Todo</button>
       </div>
 
       <!-- Mini Gráfico Dashboard -->
@@ -595,7 +595,7 @@
 
     let categoriaSeleccionada = 'alimentacion';
     let presupuestos = [];
-    let filtroTiempo = 'mes';
+    let filtroTiempo = 'todo';
     let metasAhorro = [];
 
     // === SISTEMA DE PERFILES ===
@@ -1899,7 +1899,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v440';
+    const APP_VERSION = 'v450';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
