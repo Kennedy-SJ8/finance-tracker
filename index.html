@@ -1013,7 +1013,7 @@ let isSyncing = false;
             m.categoria = 'transporte';
           } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
             m.categoria = 'alimentacion';
-          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares')) {
+          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares') || conceptoLower.includes('servicio') || conceptoLower.includes('streaming') || conceptoLower.includes('multistreaming') || conceptoLower.includes('internet') || conceptoLower.includes('suscrip')) {
             m.categoria = 'tecnologia';
           } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
             m.categoria = 'entretenimiento';
@@ -1663,7 +1663,7 @@ let isSyncing = false;
             m.categoria = 'transporte';
           } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
             m.categoria = 'alimentacion';
-          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares')) {
+          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares') || conceptoLower.includes('servicio') || conceptoLower.includes('streaming') || conceptoLower.includes('multistreaming') || conceptoLower.includes('internet') || conceptoLower.includes('suscrip')) {
             m.categoria = 'tecnologia';
           } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
             m.categoria = 'entretenimiento';
@@ -1895,7 +1895,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v390';
+    const APP_VERSION = 'v400';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
