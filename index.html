@@ -1006,8 +1006,18 @@ let isSyncing = false;
         const { data: presups, error: errPresups } = await supabaseClient.from('presupuestos').select('*').eq('usuario', currentUser);
         if (errPresups) throw errPresups;
 
-        let ingresos = 0;
-        let gastos = 0;
+        // Calcular Balance Absoluto siempre en base a TODOS los movimientos
+        let ingresosAbsolutos = 0;
+        let gastosAbsolutos = 0;
+        movsBrutos.forEach(m => {
+          if (m.tipo === 'Ingreso') ingresosAbsolutos += Number(m.monto);
+          if (m.tipo === 'Gasto') gastosAbsolutos += Number(m.monto);
+        });
+        const balanceTotal = ingresosAbsolutos - gastosAbsolutos;
+        
+        // Calcular estadísticas y categorías en base a los filtrados por tiempo
+        let ingresosFiltrados = 0;
+        let gastosFiltrados = 0;
         const gastosPorCategoria = {};
 
         movs.forEach(m => {
@@ -1027,19 +1037,19 @@ let isSyncing = false;
             m.categoria = 'salud';
           }
           
-          if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
+          if (m.tipo === 'Ingreso') ingresosFiltrados += Number(m.monto);
           if (m.tipo === 'Gasto') {
             const amt = Number(m.monto);
-            gastos += amt;
+            gastosFiltrados += amt;
             const cat = (m.categoria || '').toLowerCase();
             gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + amt;
           }
         });
 
-        window.currentBalance = ingresos - gastos;
-        actualizarBalance(ingresos - gastos);
-        actualizarIngresos(ingresos);
-        actualizarGastos(gastos, ingresos);
+        window.currentBalance = balanceTotal;
+        actualizarBalance(balanceTotal);
+        actualizarIngresos(ingresosFiltrados);
+        actualizarGastos(gastosFiltrados, ingresosFiltrados);
 
         presupuestos = presups.map(p => {
           const gastado = gastosPorCategoria[(p.categoria || '').toLowerCase()] || 0;
@@ -1053,7 +1063,7 @@ let isSyncing = false;
 
         renderizarPresupuestos(presupuestos);
                 // Insight Inteligente y Rico en Datos
-        let porcentajeGasto = ingresos > 0 ? ((gastos / ingresos) * 100).toFixed(1) : 0;
+        let porcentajeGasto = ingresosFiltrados > 0 ? ((gastosFiltrados / ingresosFiltrados) * 100).toFixed(1) : 0;
         let insightMsg = '';
         if (porcentajeGasto > 90) insightMsg = `⚠️ ¡Alerta! Has gastado el ${porcentajeGasto}% de tus ingresos. Frena tus gastos innecesarios.`;
         else if (porcentajeGasto > 60) insightMsg = `📊 Llevas gastado el ${porcentajeGasto}% de tus ingresos. Vas a buen ritmo, pero cuida los gastos hormiga.`;
@@ -1677,10 +1687,10 @@ let isSyncing = false;
             m.categoria = 'salud';
           }
           
-          if (m.tipo === 'Ingreso') ingresos += Number(m.monto);
+          if (m.tipo === 'Ingreso') ingresosFiltrados += Number(m.monto);
           if (m.tipo === 'Gasto') {
             const amt = Number(m.monto);
-            gastos += amt;
+            gastosFiltrados += amt;
             const cat = (m.categoria || '').toLowerCase();
             agrupados[cat] = (agrupados[cat] || 0) + amt;
           }
@@ -1899,7 +1909,7 @@ let isSyncing = false;
     
     // Si la versión local es vieja, forzar recarga dura
     
-    const APP_VERSION = 'v450';
+    const APP_VERSION = 'v460';
     (function() {
       const currentUrl = new URL(window.location.href);
       const isBusted = currentUrl.searchParams.has('busted');
