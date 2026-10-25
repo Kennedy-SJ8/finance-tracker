@@ -897,36 +897,99 @@
     </div>
   </div>
 
-  <!-- MODAL STATS (Responsivo) -->
+  <!-- MODAL STATS AVANZADAS (ESTILO SOLIS) -->
   <div id="stats-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
-    <div class="bg-zinc-900 w-full md:max-w-2xl md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe h-[85vh] md:h-[75vh] flex flex-col animate-slide-up border border-zinc-700/50 shadow-2xl">
-      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
-      <div class="flex justify-between items-center mb-6 flex-shrink-0">
-        <h3 id="stats-titulo" class="text-2xl font-bold text-white">Estadísticas Detalladas</h3>
-        <button onclick="closeStatsModal()" class="w-8 h-8 bg-zinc-800 rounded-full text-zinc-400 flex items-center justify-center hover:bg-zinc-700"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="flex-1 overflow-y-auto hide-scrollbar pb-6 grid md:grid-cols-2 gap-8 items-start relative">
-        <!-- Izquierda: Gráfica -->
-        <div class="flex flex-col gap-6 md:sticky md:top-0">
-          <div class="flex gap-4">
-            <div class="flex-1 bg-zinc-950/50 rounded-2xl p-4 border border-zinc-800 text-center">
-              <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Ingresos</p>
-              <p id="stats-total-ingresos" class="text-lg font-bold text-emerald-400">S/. 0.00</p>
-            </div>
-            <div class="flex-1 bg-zinc-950/50 rounded-2xl p-4 border border-zinc-800 text-center">
-              <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Gastos</p>
-              <p id="stats-total-gastos" class="text-lg font-bold text-rose-400">S/. 0.00</p>
-            </div>
+    <div class="bg-[#121316] w-full md:max-w-4xl md:rounded-[2.5rem] rounded-t-[2.5rem] p-6 pb-safe h-[92vh] md:h-[86vh] flex flex-col animate-slide-up border border-white/10 shadow-2xl">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-5 flex-shrink-0 md:hidden"></div>
+      
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5 flex-shrink-0">
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">Analytics Studio</span>
+          <h3 id="stats-titulo" class="text-2xl font-black text-white tracking-tight mt-1">Estadísticas Financieras</h3>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Time Filter Switcher in Stats -->
+          <div class="flex items-center bg-black/40 p-1 rounded-full border border-white/5 shadow-inner">
+            <button type="button" onclick="cambiarFiltroStats('semana')" id="stats-filtro-semana" class="px-3 py-1 text-xs font-semibold text-zinc-400 rounded-full transition-all">Semana</button>
+            <button type="button" onclick="cambiarFiltroStats('mes')" id="stats-filtro-mes" class="px-3 py-1 text-xs font-semibold text-zinc-400 rounded-full transition-all">Mes</button>
+            <button type="button" onclick="cambiarFiltroStats('todo')" id="stats-filtro-todo" class="px-3 py-1 text-xs font-semibold bg-white text-black font-bold shadow-sm rounded-full transition-all">Todo</button>
           </div>
-          <div class="relative h-56 md:h-72 w-full flex justify-center bg-zinc-950/30 rounded-3xl p-4 border border-zinc-800">
+
+          <button onclick="closeStatsModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Key Metrics Bar -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5 flex-shrink-0">
+        <div class="solis-subcard p-3.5">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Ingresos Totales</p>
+          <p id="stats-total-ingresos" class="text-lg font-black text-emerald-400">S/. 0.00</p>
+        </div>
+        <div class="solis-subcard p-3.5">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Gastos Totales</p>
+          <p id="stats-total-gastos" class="text-lg font-black text-orange-400">S/. 0.00</p>
+        </div>
+        <div class="solis-subcard p-3.5">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Balance Neto</p>
+          <p id="stats-balance-neto" class="text-lg font-black text-white">S/. 0.00</p>
+        </div>
+        <div class="solis-subcard p-3.5">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5">Tasa de Ahorro</p>
+          <p id="stats-tasa-ahorro" class="text-lg font-black text-emerald-400">0%</p>
+        </div>
+      </div>
+
+      <!-- Main Body: Two Columns (Left: Charts with Multi-View Tab Switcher, Right: Breakdown) -->
+      <div class="flex-1 overflow-y-auto hide-scrollbar grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Column Left: Multi-Chart Studio (7 cols on lg) -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+          <!-- Chart View Switcher Tabs -->
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center bg-black/40 p-1 rounded-full border border-white/5 space-x-1">
+              <button type="button" onclick="cambiarTipoGraficoStats('tendencia')" id="stats-tab-tendencia" class="solis-tab-btn active !text-xs !py-1 !px-3">Tendencia</button>
+              <button type="button" onclick="cambiarTipoGraficoStats('distribucion')" id="stats-tab-distribucion" class="solis-tab-btn !text-xs !py-1 !px-3">Dona</button>
+              <button type="button" onclick="cambiarTipoGraficoStats('barras')" id="stats-tab-barras" class="solis-tab-btn !text-xs !py-1 !px-3">Barras</button>
+              <button type="button" onclick="cambiarTipoGraficoStats('radar')" id="stats-tab-radar" class="solis-tab-btn !text-xs !py-1 !px-3">Radar</button>
+            </div>
+            <span id="stats-chart-desc" class="text-[11px] font-semibold text-zinc-400">Flujo de Liquidez</span>
+          </div>
+
+          <!-- Chart Canvas Container -->
+          <div class="relative h-64 sm:h-72 w-full flex justify-center items-center bg-zinc-950/40 rounded-3xl p-4 border border-white/5 shadow-inner">
             <canvas id="statsChart"></canvas>
           </div>
+
+          <!-- Mini Financial Health Alert Box -->
+          <div id="stats-summary-box" class="solis-subcard p-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white" id="stats-insight-headline">Salud Financiera Óptima</p>
+                <p class="text-[11px] text-zinc-400 leading-snug" id="stats-insight-sub">Tus ingresos superan ampliamente tus gastos en este periodo.</p>
+              </div>
+            </div>
+            <span id="stats-score-badge" class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black shrink-0">94/100</span>
+          </div>
         </div>
-        <!-- Derecha: Desglose -->
-        <div>
-          <h4 class="text-sm font-bold text-zinc-300 mb-4 px-1">Desglose por Categoría</h4>
-          <div id="stats-categorias-container" class="space-y-4 pr-1"></div>
+
+        <!-- Column Right: Category Breakdown (5 cols on lg) -->
+        <div class="lg:col-span-5 flex flex-col gap-3">
+          <div class="flex items-center justify-between px-1">
+            <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Desglose por Categoría</h4>
+            <span id="stats-count-categories" class="text-[11px] text-zinc-500 font-semibold">0 categorías</span>
+          </div>
+          <div id="stats-categorias-container" class="space-y-2.5 pr-1 max-h-[380px] overflow-y-auto hide-scrollbar">
+            <!-- Renderizado dinámicamente -->
+          </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -2795,12 +2858,26 @@
       }
     }
 
-    // ----- STATS -----
+    // ----- STATS AVANZADAS (ESTILO SOLIS) -----
+    let statsFiltro = 'todo';
+    let statsChartType = 'tendencia';
+    let chartInstance = null;
+    let statsCurrentData = {
+      ingresos: 0,
+      gastos: 0,
+      balance: 0,
+      tasaAhorro: 0,
+      listaCategorias: [],
+      tendenciaSeries: { labels: [], ingresos: [], gastos: [] }
+    };
 
     function openStatsModal() {
       const modal = document.getElementById('stats-modal');
+      if (!modal) return;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      actualizarPillsFiltroStats();
+      actualizarTabsGraficoStats();
       loadStats();
     }
 
@@ -2808,14 +2885,64 @@
       closeModalWithAnimation('stats-modal');
     }
 
+    function cambiarFiltroStats(filtro) {
+      statsFiltro = filtro;
+      actualizarPillsFiltroStats();
+      loadStats();
+    }
+
+    function actualizarPillsFiltroStats() {
+      ['semana', 'mes', 'todo'].forEach(f => {
+        const btn = document.getElementById(`stats-filtro-${f}`);
+        if (btn) {
+          if (f === statsFiltro) {
+            btn.className = 'px-3 py-1 text-xs font-bold bg-white text-black shadow-sm rounded-full transition-all';
+          } else {
+            btn.className = 'px-3 py-1 text-xs font-semibold text-zinc-400 hover:text-white rounded-full transition-all';
+          }
+        }
+      });
+    }
+
+    function cambiarTipoGraficoStats(tipo) {
+      statsChartType = tipo;
+      actualizarTabsGraficoStats();
+      renderizarStatsChart();
+    }
+
+    function actualizarTabsGraficoStats() {
+      const descMap = {
+        'tendencia': 'Flujo de Dinero en el Tiempo',
+        'distribucion': 'Distribución Porcentual (Dona)',
+        'barras': 'Volumen por Categoría (Barras)',
+        'radar': 'Intensidad de Gastos (Radar)'
+      };
+      
+      const descEl = document.getElementById('stats-chart-desc');
+      if (descEl && descMap[statsChartType]) {
+        descEl.textContent = descMap[statsChartType];
+      }
+
+      ['tendencia', 'distribucion', 'barras', 'radar'].forEach(t => {
+        const btn = document.getElementById(`stats-tab-${t}`);
+        if (btn) {
+          if (t === statsChartType) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+    }
+
     async function loadStats() {
       const container = document.getElementById('stats-categorias-container');
-      container.innerHTML = '<div class="spinner"></div>';
+      if (container) container.innerHTML = '<div class="py-12 flex justify-center"><div class="spinner"></div></div>';
 
       try {
         let movs = (window.lastMovimientosBrutos || []);
         
-        // Si por alguna razón la lista en memoria está vacía, intentar obtener
+        // Si la lista en memoria está vacía, intentar obtener de Supabase
         if (movs.length === 0 && activeBackend === 'supabase' && supabaseClient) {
           const { data } = await supabaseClient.from('movimientos').select('*').eq('usuario', currentUser);
           if (data) movs = data;
@@ -2823,98 +2950,352 @@
 
         const ahora = new Date();
         const filtrados = movs.filter(m => {
-          if (filtroTiempo === 'todo') return true;
+          if (statsFiltro === 'todo') return true;
           const fechaMov = new Date(m.fecha);
           if (isNaN(fechaMov.getTime())) return true;
-          if (filtroTiempo === 'mes') {
+          if (statsFiltro === 'mes') {
             return fechaMov.getMonth() === ahora.getMonth() && fechaMov.getFullYear() === ahora.getFullYear();
           }
-          if (filtroTiempo === 'semana') {
+          if (statsFiltro === 'semana') {
             const difDias = (ahora - fechaMov) / (1000 * 60 * 60 * 24);
-            return difDias <= 7;
+            return difDias >= 0 && difDias <= 7;
           }
           return true;
         });
 
-        // Actualizar título
+        // Actualizar título dinámico
         const titulo = document.getElementById('stats-titulo');
-        if (titulo) titulo.textContent = `Estadísticas (${filtroTiempo.charAt(0).toUpperCase() + filtroTiempo.slice(1)})`;
+        if (titulo) {
+          const labelFiltro = statsFiltro === 'semana' ? 'Últimos 7 días' : statsFiltro === 'mes' ? 'Este Mes' : 'Histórico Total';
+          titulo.textContent = `Estadísticas (${labelFiltro})`;
+        }
 
-        let ingresos = 0;
-        let gastos = 0;
+        let totalIngresos = 0;
+        let totalGastos = 0;
         let agrupados = {};
 
+        // Recorrer y clasificar
         filtrados.forEach(m => {
           const conceptoLower = (m.concepto || '').toLowerCase();
-          if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber') || conceptoLower.includes('bus')) {
-            m.categoria = 'transporte';
-          } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
-            m.categoria = 'alimentacion';
-          } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares') || conceptoLower.includes('servicio') || conceptoLower.includes('streaming') || conceptoLower.includes('multistreaming') || conceptoLower.includes('internet') || conceptoLower.includes('suscrip')) {
-            m.categoria = 'tecnologia';
-          } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
-            m.categoria = 'entretenimiento';
-          } else if (conceptoLower.includes('ropa') || conceptoLower.includes('zapatos') || conceptoLower.includes('polo') || conceptoLower.includes('zapatillas') || conceptoLower.includes('casaca')) {
-            m.categoria = 'ropa';
-          } else if (conceptoLower.includes('pastillas') || conceptoLower.includes('medico') || conceptoLower.includes('farmacia') || conceptoLower.includes('clinica')) {
-            m.categoria = 'salud';
+          if (!m.categoria || m.categoria === 'otro') {
+            if (conceptoLower.includes('pasaje') || conceptoLower.includes('taxi') || conceptoLower.includes('uber') || conceptoLower.includes('bus')) {
+              m.categoria = 'transporte';
+            } else if (conceptoLower.includes('comida') || conceptoLower.includes('almuerzo') || conceptoLower.includes('cena') || conceptoLower.includes('desayuno') || conceptoLower.includes('galletas') || conceptoLower.includes('agua')) {
+              m.categoria = 'alimentacion';
+            } else if (conceptoLower.includes('televisor') || conceptoLower.includes('laptop') || conceptoLower.includes('celular') || conceptoLower.includes('cable') || conceptoLower.includes('auriculares') || conceptoLower.includes('servicio') || conceptoLower.includes('streaming') || conceptoLower.includes('multistreaming') || conceptoLower.includes('internet') || conceptoLower.includes('suscrip')) {
+              m.categoria = 'tecnologia';
+            } else if (conceptoLower.includes('cine') || conceptoLower.includes('netflix') || conceptoLower.includes('juego') || conceptoLower.includes('spotify') || conceptoLower.includes('fiesta')) {
+              m.categoria = 'entretenimiento';
+            } else if (conceptoLower.includes('ropa') || conceptoLower.includes('zapatos') || conceptoLower.includes('polo') || conceptoLower.includes('zapatillas') || conceptoLower.includes('casaca')) {
+              m.categoria = 'ropa';
+            } else if (conceptoLower.includes('pastillas') || conceptoLower.includes('medico') || conceptoLower.includes('farmacia') || conceptoLower.includes('clinica')) {
+              m.categoria = 'salud';
+            }
           }
-          
-          if (m.tipo === 'Ingreso') ingresosFiltrados += Number(m.monto);
-          if (m.tipo === 'Gasto') {
-            const amt = Number(m.monto);
-            gastosFiltrados += amt;
-            const cat = (m.categoria || '').toLowerCase();
-            agrupados[cat] = (agrupados[cat] || 0) + amt;
+
+          const amt = Number(m.monto || 0);
+          if (m.tipo === 'Ingreso') {
+            totalIngresos += amt;
+          } else if (m.tipo === 'Gasto') {
+            totalGastos += amt;
+            const cat = (m.categoria || 'otro').toLowerCase();
+            if (!agrupados[cat]) {
+              agrupados[cat] = { total: 0, count: 0 };
+            }
+            agrupados[cat].total += amt;
+            agrupados[cat].count += 1;
           }
         });
 
-        document.getElementById('stats-total-ingresos').textContent = formatearMoneda(ingresos);
-        document.getElementById('stats-total-gastos').textContent = formatearMoneda(gastos);
+        const balanceNeto = totalIngresos - totalGastos;
+        const tasaAhorro = totalIngresos > 0 ? Math.max(0, Math.round(((totalIngresos - totalGastos) / totalIngresos) * 100)) : 0;
 
-        const porCategoria = Object.keys(agrupados).map(cat => ({ categoria: cat, total: agrupados[cat] })).sort((a,b) => b.total - a.total);
-        renderizarStats(porCategoria);
+        // Actualizar KPIs superiores
+        const elIngresos = document.getElementById('stats-total-ingresos');
+        const elGastos = document.getElementById('stats-total-gastos');
+        const elBalance = document.getElementById('stats-balance-neto');
+        const elAhorro = document.getElementById('stats-tasa-ahorro');
+
+        if (elIngresos) elIngresos.textContent = formatearMoneda(totalIngresos);
+        if (elGastos) elGastos.textContent = formatearMoneda(totalGastos);
+        if (elBalance) {
+          elBalance.textContent = formatearMoneda(balanceNeto);
+          elBalance.className = `text-lg font-black ${balanceNeto >= 0 ? 'text-white' : 'text-rose-400'}`;
+        }
+        if (elAhorro) elAhorro.textContent = `${tasaAhorro}%`;
+
+        // Generar lista de categorías ordenada desc
+        const porCategoria = Object.keys(agrupados).map(cat => ({
+          categoria: cat,
+          total: agrupados[cat].total,
+          count: agrupados[cat].count
+        })).sort((a, b) => b.total - a.total);
+
+        // Agrupar serie cronológica para gráfico de tendencia
+        const fechasMap = {};
+        const sortedMovs = [...filtrados].filter(m => m.fecha).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+        if (sortedMovs.length === 0) {
+          fechasMap['Sin datos'] = { ingreso: 0, gasto: 0 };
+        } else {
+          sortedMovs.forEach(m => {
+            const d = new Date(m.fecha);
+            let key;
+            if (isNaN(d.getTime())) {
+              key = m.fecha;
+            } else if (statsFiltro === 'semana') {
+              key = d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' });
+            } else if (statsFiltro === 'mes') {
+              key = d.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' });
+            } else {
+              key = d.toLocaleDateString('es-PE', { month: 'short', year: '2-digit' });
+            }
+
+            if (!fechasMap[key]) fechasMap[key] = { ingreso: 0, gasto: 0 };
+            if (m.tipo === 'Ingreso') fechasMap[key].ingreso += Number(m.monto || 0);
+            if (m.tipo === 'Gasto') fechasMap[key].gasto += Number(m.monto || 0);
+          });
+        }
+
+        const labels = Object.keys(fechasMap);
+        const tendenciaSeries = {
+          labels: labels,
+          ingresos: labels.map(k => fechasMap[k].ingreso),
+          gastos: labels.map(k => fechasMap[k].gasto)
+        };
+
+        statsCurrentData = {
+          ingresos: totalIngresos,
+          gastos: totalGastos,
+          balance: balanceNeto,
+          tasaAhorro: tasaAhorro,
+          listaCategorias: porCategoria,
+          tendenciaSeries: tendenciaSeries
+        };
+
+        // Actualizar Health Insight y Score
+        actualizarInsightStats(totalIngresos, totalGastos, balanceNeto, tasaAhorro);
+
+        // Renderizar Lista de Categorías
+        renderizarListaCategoriasStats(porCategoria, totalGastos);
+
+        // Renderizar Gráfico
+        renderizarStatsChart();
+
       } catch (error) {
         console.error('Error stats:', error);
-        container.innerHTML = '<p class="text-secondary text-sm text-center">Error al procesar estadísticas</p>';
+        if (container) container.innerHTML = '<p class="text-zinc-500 text-sm text-center py-6">Error al procesar estadísticas</p>';
       }
     }
 
-    let chartInstance = null;
-    function renderizarStats(lista) {
-      const container = document.getElementById('stats-categorias-container');
-      if (!lista || lista.length === 0) {
-        container.innerHTML = '<p class="text-secondary text-sm text-center">Aún no hay gastos registrados</p>';
-        if(chartInstance) chartInstance.destroy();
+    function actualizarInsightStats(ingresos, gastos, balance, tasaAhorro) {
+      const headlineEl = document.getElementById('stats-insight-headline');
+      const subEl = document.getElementById('stats-insight-sub');
+      const badgeEl = document.getElementById('stats-score-badge');
+
+      if (!headlineEl || !subEl || !badgeEl) return;
+
+      if (ingresos === 0 && gastos === 0) {
+        headlineEl.textContent = 'Sin Movimientos Registrados';
+        subEl.textContent = 'No hay registros en el periodo seleccionado para generar un análisis.';
+        badgeEl.textContent = '100/100';
+        badgeEl.className = 'px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-black shrink-0';
         return;
       }
 
-      const maxTotal = Math.max(...lista.map(item => item.total));
+      let score = 50;
+      if (ingresos > 0) {
+        const margen = balance / ingresos;
+        score = Math.min(98, Math.max(25, Math.round(50 + (margen * 45))));
+      } else if (gastos > 0) {
+        score = 25;
+      }
+
+      badgeEl.textContent = `${score}/100`;
+
+      if (score >= 80) {
+        headlineEl.textContent = 'Salud Financiera Excelente';
+        subEl.textContent = `Tasa de ahorro del ${tasaAhorro}%. Tienes un colchón saludable para tus metas.`;
+        badgeEl.className = 'px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black shrink-0';
+      } else if (score >= 60) {
+        headlineEl.textContent = 'Finanzas Equilibradas';
+        subEl.textContent = `Mantienes balance positivo (${formatearMoneda(balance)}). Vigila los gastos hormiga.`;
+        badgeEl.className = 'px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-black shrink-0';
+      } else if (score >= 45) {
+        headlineEl.textContent = 'Margen Reducido';
+        subEl.textContent = 'Tus gastos se acercan a tus ingresos totales. Procura recortar gastos secundarios.';
+        badgeEl.className = 'px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-black shrink-0';
+      } else {
+        headlineEl.textContent = 'Déficit en este Periodo';
+        subEl.textContent = `Has gastado ${formatearMoneda(Math.abs(balance))} más de lo que ingresó. Revisa tu presupuesto.`;
+        badgeEl.className = 'px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-black shrink-0';
+      }
+    }
+
+    function renderizarListaCategoriasStats(lista, totalGastos) {
+      const container = document.getElementById('stats-categorias-container');
+      const countEl = document.getElementById('stats-count-categories');
+      if (!container) return;
+
+      if (countEl) {
+        countEl.textContent = `${lista.length} ${lista.length === 1 ? 'categoría' : 'categorías'}`;
+      }
+
+      if (!lista || lista.length === 0) {
+        container.innerHTML = `
+          <div class="py-10 text-center flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-2">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L17 7.5V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <p class="text-zinc-400 text-xs font-bold">Sin gastos en este rango</p>
+            <p class="text-zinc-600 text-[11px] mt-0.5">Prueba seleccionando el filtro "Todo"</p>
+          </div>`;
+        return;
+      }
+
+      const maxTotal = Math.max(...lista.map(i => i.total));
+
       container.innerHTML = lista.map(item => {
-        const catKey = (item.categoria || '').toLowerCase();
+        const catKey = (item.categoria || 'otro').toLowerCase();
         const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
-        const porcentaje = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
+        const porcentajeTotal = totalGastos > 0 ? Math.round((item.total / totalGastos) * 100) : 0;
+        const porcentajeBarra = maxTotal > 0 ? Math.round((item.total / maxTotal) * 100) : 0;
+
         return `
-          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
+          <div class="p-3 rounded-2xl bg-white/[0.025] hover:bg-white/[0.045] border border-white/5 transition-all">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-xl flex items-center justify-center" style="background-color: ${cat.color}20; color: ${cat.color}; border: 1px solid ${cat.color}35">
+                <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background-color: ${cat.color}20; color: ${cat.color}; border: 1px solid ${cat.color}35">
                   ${getCategoriaIcon(catKey, 'w-4 h-4')}
                 </span>
-                <span class="text-xs font-bold text-white">${cat.nombre}</span>
+                <div>
+                  <p class="text-xs font-bold text-white">${cat.nombre}</p>
+                  <p class="text-[10px] text-zinc-500 font-medium">${item.count} ${item.count === 1 ? 'movimiento' : 'movimientos'}</p>
+                </div>
               </div>
-              <span class="text-xs font-bold text-zinc-200">${formatearMoneda(item.total)}</span>
+              <div class="text-right">
+                <p class="text-xs font-extrabold text-white tracking-tight">${formatearMoneda(item.total)}</p>
+                <span class="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/5 text-zinc-400 border border-white/5">${porcentajeTotal}%</span>
+              </div>
             </div>
-            <div class="progress-bar rounded-full h-1.5 bg-zinc-800 overflow-hidden">
-              <div class="progress-fill h-full rounded-full transition-all duration-500" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
+            <div class="progress-bar rounded-full h-1.5 bg-zinc-800/80 overflow-hidden">
+              <div class="progress-fill h-full rounded-full transition-all duration-500" style="width: ${porcentajeBarra}%; background-color: ${cat.color}"></div>
             </div>
           </div>`;
       }).join('');
+    }
 
-      // Update Chart
+    // Alias retrocompatible
+    function renderizarStats(lista) {
+      renderizarListaCategoriasStats(lista, statsCurrentData.gastos);
+    }
+
+    function renderizarStatsChart() {
       const ctx = document.getElementById('statsChart');
-      if(ctx) {
-        if(chartInstance) chartInstance.destroy();
+      if (!ctx) return;
+
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+
+      const defaultFont = { family: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif", size: 10 };
+      const lista = statsCurrentData.listaCategorias || [];
+
+      // Si no hay datos de ningún tipo
+      if ((!lista || lista.length === 0) && statsCurrentData.ingresos === 0 && statsCurrentData.gastos === 0) {
+        mostrarMensajeEnCanvas(ctx, 'Sin datos para graficar en este periodo');
+        return;
+      }
+
+      // TIPO 1: TENDENCIA (Spline / Area)
+      if (statsChartType === 'tendencia') {
+        const series = statsCurrentData.tendenciaSeries;
+        chartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: series.labels,
+            datasets: [
+              {
+                label: 'Ingresos',
+                data: series.ingresos,
+                borderColor: '#34d399',
+                backgroundColor: 'rgba(52, 211, 153, 0.12)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2.5,
+                pointBackgroundColor: '#34d399',
+                pointBorderColor: '#121316',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Gastos',
+                data: series.gastos,
+                borderColor: '#fb923c',
+                backgroundColor: 'rgba(251, 146, 60, 0.08)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2.5,
+                pointBackgroundColor: '#fb923c',
+                pointBorderColor: '#121316',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                align: 'end',
+                labels: { color: '#a1a1aa', boxWidth: 8, boxHeight: 8, usePointStyle: true, font: defaultFont }
+              },
+              tooltip: {
+                backgroundColor: '#18181b',
+                titleColor: '#ffffff',
+                bodyColor: '#e4e4e7',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 12,
+                callbacks: {
+                  label: (c) => ` ${c.dataset.label}: ${formatearMoneda(c.parsed.y)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                ticks: { color: '#71717a', font: defaultFont, maxRotation: 0 }
+              },
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                ticks: {
+                  color: '#71717a',
+                  font: defaultFont,
+                  callback: (v) => 'S/.' + (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v)
+                }
+              }
+            }
+          }
+        });
+        return;
+      }
+
+      // TIPO 2: DISTRIBUCIÓN (Dona estilizada Solis)
+      if (statsChartType === 'distribucion') {
+        if (lista.length === 0) {
+          mostrarMensajeEnCanvas(ctx, 'Sin gastos registrados en este periodo');
+          return;
+        }
+
         chartInstance = new Chart(ctx, {
           type: 'doughnut',
           data: {
@@ -2922,20 +3303,165 @@
             datasets: [{
               data: lista.map(i => i.total),
               backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
-              borderWidth: 0,
-              hoverOffset: 4
+              borderColor: '#121316',
+              borderWidth: 3,
+              hoverOffset: 6
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '75%',
+            cutout: '72%',
             plugins: {
-              legend: { display: false }
+              legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#a1a1aa', boxWidth: 8, boxHeight: 8, usePointStyle: true, font: defaultFont, padding: 10 }
+              },
+              tooltip: {
+                backgroundColor: '#18181b',
+                titleColor: '#ffffff',
+                bodyColor: '#e4e4e7',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 12,
+                callbacks: {
+                  label: (c) => {
+                    const totalG = statsCurrentData.gastos || 1;
+                    const pct = Math.round((c.parsed / totalG) * 100);
+                    return ` ${c.label}: ${formatearMoneda(c.parsed)} (${pct}%)`;
+                  }
+                }
+              }
             }
           }
         });
+        return;
       }
+
+      // TIPO 3: BARRAS (Cápsulas de píldora redondeadas)
+      if (statsChartType === 'barras') {
+        if (lista.length === 0) {
+          mostrarMensajeEnCanvas(ctx, 'Sin gastos registrados en este periodo');
+          return;
+        }
+
+        chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
+            datasets: [{
+              label: 'Gasto',
+              data: lista.map(i => i.total),
+              backgroundColor: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).color),
+              borderRadius: 9999,
+              borderSkipped: false,
+              maxBarThickness: 32
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#18181b',
+                titleColor: '#ffffff',
+                bodyColor: '#e4e4e7',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 12,
+                callbacks: {
+                  label: (c) => ` Gasto: ${formatearMoneda(c.parsed.y)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: '#a1a1aa', font: defaultFont }
+              },
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                ticks: {
+                  color: '#71717a',
+                  font: defaultFont,
+                  callback: (v) => 'S/.' + (v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v)
+                }
+              }
+            }
+          }
+        });
+        return;
+      }
+
+      // TIPO 4: RADAR (Firma e intensidad de consumo)
+      if (statsChartType === 'radar') {
+        if (lista.length === 0) {
+          mostrarMensajeEnCanvas(ctx, 'Sin gastos registrados en este periodo');
+          return;
+        }
+
+        chartInstance = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: lista.map(i => (CATEGORIAS[i.categoria] || CATEGORIAS.otro).nombre),
+            datasets: [{
+              label: 'Intensidad',
+              data: lista.map(i => i.total),
+              backgroundColor: 'rgba(52, 211, 153, 0.2)',
+              borderColor: '#34d399',
+              borderWidth: 2,
+              pointBackgroundColor: '#34d399',
+              pointBorderColor: '#121316',
+              pointRadius: 3.5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                pointLabels: { color: '#a1a1aa', font: defaultFont },
+                ticks: { display: false }
+              }
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#18181b',
+                titleColor: '#ffffff',
+                bodyColor: '#e4e4e7',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 12,
+                callbacks: {
+                  label: (c) => ` Gasto: ${formatearMoneda(c.parsed.r)}`
+                }
+              }
+            }
+          }
+        });
+        return;
+      }
+    }
+
+    function mostrarMensajeEnCanvas(canvas, texto) {
+      const c = canvas.getContext('2d');
+      if (!c) return;
+      c.save();
+      c.clearRect(0, 0, canvas.width, canvas.height);
+      c.font = '12px "Plus Jakarta Sans", sans-serif';
+      c.fillStyle = '#71717a';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(texto, canvas.width / 2, canvas.height / 2);
+      c.restore();
     }
 
     function resetCategoryChips() {
