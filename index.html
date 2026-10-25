@@ -359,7 +359,7 @@
     <!-- SUBHEADER / STATUS BAR -->
     <div class="flex flex-wrap items-center justify-between gap-3 px-2">
       <div>
-        <p id="greeting-text" class="text-xs text-zinc-400 font-semibold tracking-wide">Hola de nuevo 👋</p>
+        <p id="greeting-text" class="text-xs text-zinc-400 font-semibold tracking-wide flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(34,197,94,0.8)]"></span>Hola de nuevo</p>
         <p id="fecha-actual" class="text-lg font-black text-white tracking-tight">Finanzas Inteligentes</p>
       </div>
 
@@ -394,7 +394,10 @@
                   <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.7)]"></span> Gasto
                 </span>
               </div>
-              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300">2026 ▾</span>
+              <button onclick="toggleYearFilter()" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 transition-all flex items-center gap-1 active:scale-95">
+                <span>2026</span>
+                <svg class="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
             </div>
           </div>
 
@@ -405,12 +408,12 @@
 
           <!-- Month pills bar along bottom -->
           <div id="revenue-month-pills" class="flex items-center justify-between pt-3 border-t border-white/5 overflow-x-auto gap-1">
-            <span class="solis-month-pill">May</span>
-            <span class="solis-month-pill">Jun</span>
-            <span class="solis-month-pill">Jul</span>
-            <span class="solis-month-pill">Ago</span>
-            <span class="solis-month-pill">Set</span>
-            <span class="solis-month-pill active">Oct</span>
+            <button type="button" onclick="filtrarPorMesGrafico(4, 'Mayo')" id="pill-month-4" class="solis-month-pill">May</button>
+            <button type="button" onclick="filtrarPorMesGrafico(5, 'Junio')" id="pill-month-5" class="solis-month-pill">Jun</button>
+            <button type="button" onclick="filtrarPorMesGrafico(6, 'Julio')" id="pill-month-6" class="solis-month-pill">Jul</button>
+            <button type="button" onclick="filtrarPorMesGrafico(7, 'Agosto')" id="pill-month-7" class="solis-month-pill">Ago</button>
+            <button type="button" onclick="filtrarPorMesGrafico(8, 'Setiembre')" id="pill-month-8" class="solis-month-pill">Set</button>
+            <button type="button" onclick="filtrarPorMesGrafico(9, 'Octubre')" id="pill-month-9" class="solis-month-pill active">Oct</button>
           </div>
         </div>
 
@@ -420,7 +423,8 @@
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Total Profits</span>
               <span class="solis-pill-green text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                <i class="fas fa-arrow-up text-[10px]"></i> 4.7%
+                <svg class="w-3 h-3 text-emerald-400 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                4.7%
               </span>
             </div>
             <h2 id="balance" class="text-4xl sm:text-5xl font-black text-white tracking-tight mb-6">S/. 0.00</h2>
@@ -473,8 +477,16 @@
           <div class="flex items-center justify-between mb-4">
             <div class="relative">
               <div class="ai-sphere"></div>
-              <span class="ai-sparkle text-lg -top-2 -right-3">✦</span>
-              <span class="ai-sparkle text-xs -bottom-1 -left-2" style="animation-delay: 1.2s;">✧</span>
+              <span class="ai-sparkle -top-1 -right-2">
+                <svg class="w-4 h-4 text-emerald-300" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                </svg>
+              </span>
+              <span class="ai-sparkle -bottom-1 -left-2" style="animation-delay: 1.2s;">
+                <svg class="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                </svg>
+              </span>
             </div>
             <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">AI Insight</span>
           </div>
@@ -486,9 +498,11 @@
             </div>
           </div>
 
-          <button onclick="openStatsModal()" class="w-full py-3 rounded-full bg-white text-black font-extrabold text-xs tracking-wide hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] active:scale-95 flex items-center justify-center gap-2">
+          <button onclick="openAIReportModal()" class="w-full py-3 rounded-full bg-white text-black font-extrabold text-xs tracking-wide hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] active:scale-95 flex items-center justify-center gap-2">
             <span>Crear Reporte AI</span>
-            <i class="fas fa-sparkles text-[10px]"></i>
+            <svg class="w-3.5 h-3.5 text-black" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+            </svg>
           </button>
         </div>
 
@@ -535,8 +549,8 @@
             <canvas id="financialHealthChart"></canvas>
           </div>
 
-          <button onclick="switchView('movimientos')" class="w-full py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-2">
-            <span>Overview ↗</span>
+          <button onclick="openStatsModal()" class="w-full py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span>Ver Análisis Completo ↗</span>
           </button>
         </div>
       </div>
@@ -716,7 +730,7 @@
           </div>
         </div>
         <div class="bg-zinc-950 rounded-2xl p-4 mb-6 border border-zinc-800">
-          <input type="text" id="meta-nombre" class="input-clean w-full text-lg text-white font-medium" placeholder="Ej. Viaje a Cancún ✈️" required autocomplete="off">
+          <input type="text" id="meta-nombre" class="input-clean w-full text-lg text-white font-medium" placeholder="Ej. Fondo de Emergencia, Inversión..." required autocomplete="off">
         </div>
         <button type="submit" id="btn-submit-meta" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
           Crear Meta
@@ -814,6 +828,72 @@
           Guardar Límite
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL REPORTE AI INTELIGENTE -->
+  <div id="ai-report-modal" class="fixed inset-0 modal-overlay z-50 hidden md:items-center md:justify-center items-end justify-center">
+    <div class="bg-[#121316] w-full md:max-w-lg md:rounded-[2rem] rounded-t-[2rem] p-6 pb-safe animate-slide-up border border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-6 flex-shrink-0 md:hidden"></div>
+      
+      <!-- Modal Header with AI Sphere -->
+      <div class="flex justify-between items-start mb-6">
+        <div class="flex items-center gap-3">
+          <div class="ai-sphere !w-11 !h-11 shrink-0"></div>
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">Solis AI Engine</span>
+            <h3 class="text-xl font-black text-white tracking-tight mt-1">Diagnóstico Financiero</h3>
+          </div>
+        </div>
+        <button onclick="closeAIReportModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Key Metrics Overview in Modal -->
+      <div class="grid grid-cols-3 gap-3 mb-5">
+        <div class="solis-subcard p-3 text-center">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Score Salud</p>
+          <p id="ai-modal-score" class="text-xl font-black text-emerald-400">92/100</p>
+        </div>
+        <div class="solis-subcard p-3 text-center">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Tasa Ahorro</p>
+          <p id="ai-modal-savings-rate" class="text-xl font-black text-white">0%</p>
+        </div>
+        <div class="solis-subcard p-3 text-center">
+          <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Top Consumo</p>
+          <p id="ai-modal-top-cat" class="text-xs font-bold text-amber-400 truncate mt-1">-</p>
+        </div>
+      </div>
+
+      <!-- AI Analysis Findings -->
+      <div class="space-y-3 mb-6">
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+          <p class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/></svg>
+            Análisis de Flujo y Liquidez
+          </p>
+          <p id="ai-modal-pattern-text" class="text-xs text-zinc-400 leading-relaxed font-medium">Analizando tus movimientos...</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+          <p class="text-xs font-bold text-zinc-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            Recomendación Accionable
+          </p>
+          <p id="ai-modal-recommendation-text" class="text-xs text-zinc-400 leading-relaxed font-medium">Calculando recomendaciones optimizadas...</p>
+        </div>
+      </div>
+
+      <!-- Modal Action Buttons -->
+      <div class="flex gap-3">
+        <button onclick="closeAIReportModal(); openStatsModal();" class="flex-1 py-3 rounded-full bg-white text-black font-extrabold text-xs tracking-wide hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] active:scale-95 text-center">
+          Ver Desglose Completo ↗
+        </button>
+        <button onclick="closeAIReportModal()" class="px-5 py-3 rounded-full bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-xs transition-all active:scale-95">
+          Cerrar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1013,18 +1093,72 @@
     }
 
     const CATEGORIAS = {
-      alimentacion: { emoji: '🍔', color: '#F59E0B', nombre: 'Alimentación' },
-      transporte: { emoji: '🚗', color: '#3B82F6', nombre: 'Transporte' },
-      entretenimiento: { emoji: '🎮', color: '#8B5CF6', nombre: 'Entretenimiento' },
-      salud: { emoji: '💊', color: '#EF4444', nombre: 'Salud' },
-      educacion: { emoji: '📚', color: '#06B6D4', nombre: 'Educación' },
-      hogar: { emoji: '🏠', color: '#10B981', nombre: 'Hogar' },
-      ropa: { emoji: '👕', color: '#EC4899', nombre: 'Ropa' },
-      tecnologia: { emoji: '📱', color: '#6366F1', nombre: 'Tecnología' },
-      gasto_hormiga: { emoji: '🐜', color: '#8A99AD', nombre: 'Gasto hormiga' },
-      otro: { emoji: '📦', color: '#64748B', nombre: 'Otro' },
-      ingreso: { emoji: '💰', color: '#00E699', nombre: 'Ingreso' }
+      alimentacion: { 
+        nombre: 'Alimentación', 
+        color: '#f59e0b',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2v8a3 3 0 0 1-3 3h-1v9"/><path d="M18 2h-4v8"/><path d="M6 2v10a3 3 0 0 0 3 3h1v7"/><path d="M6 2h4v5H6z"/></svg>`
+      },
+      transporte: { 
+        nombre: 'Transporte', 
+        color: '#3b82f6',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 10.9 2 11.2 2 11.6V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`
+      },
+      entretenimiento: { 
+        nombre: 'Entretenimiento', 
+        color: '#8b5cf6',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>`
+      },
+      salud: { 
+        nombre: 'Salud', 
+        color: '#ef4444',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`
+      },
+      educacion: { 
+        nombre: 'Educación', 
+        color: '#06b6d4',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>`
+      },
+      hogar: { 
+        nombre: 'Hogar', 
+        color: '#10b981',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`
+      },
+      ropa: { 
+        nombre: 'Ropa', 
+        color: '#ec4899',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`
+      },
+      tecnologia: { 
+        nombre: 'Tecnología', 
+        color: '#6366f1',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`
+      },
+      gasto_hormiga: { 
+        nombre: 'Gasto hormiga', 
+        color: '#8a99ad',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`
+      },
+      otro: { 
+        nombre: 'Otro', 
+        color: '#64748b',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`
+      },
+      ingreso: { 
+        nombre: 'Ingreso', 
+        color: '#22c55e',
+        svg: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`
+      }
     };
+
+    function getCategoriaIcon(catKey, customClasses = 'w-4 h-4') {
+      const key = (catKey || '').toLowerCase();
+      const cat = CATEGORIAS[key] || CATEGORIAS.otro;
+      const svgStr = cat.svg || CATEGORIAS.otro.svg;
+      if (customClasses && customClasses !== 'w-4 h-4') {
+        return svgStr.replace('w-4 h-4', customClasses);
+      }
+      return svgStr;
+    }
 
     let categoriaSeleccionada = 'alimentacion';
     let presupuestos = [];
@@ -1203,23 +1337,41 @@
       }
     });
 
+    function renderizarChipsCategorias() {
+      const container = document.getElementById('categorias-container');
+      if (!container) return;
+
+      const keys = Object.keys(CATEGORIAS).filter(k => k !== 'ingreso');
+      container.innerHTML = keys.map(k => {
+        const cat = CATEGORIAS[k];
+        const isActive = k === categoriaSeleccionada;
+        return `
+          <button type="button" onclick="seleccionarCategoriaChip('${k}')" id="chip-${k}" class="category-chip shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-semibold transition-all ${isActive ? 'bg-white text-black border-white shadow-md font-bold' : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/60 hover:bg-zinc-700'}">
+            <span class="w-4 h-4 flex items-center justify-center shrink-0" style="color: ${isActive ? '#000000' : cat.color};">
+              ${getCategoriaIcon(k, 'w-3.5 h-3.5')}
+            </span>
+            <span>${cat.nombre}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function seleccionarCategoriaChip(k) {
+      categoriaSeleccionada = k;
+      renderizarChipsCategorias();
+      actualizarBarraPresupuesto();
+    }
+
     function setupCategoryChips() {
-      const chips = document.querySelectorAll('.category-chip');
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          categoriaSeleccionada = chip.dataset.categoria;
-          actualizarBarraPresupuesto();
-        });
-      });
+      renderizarChipsCategorias();
     }
 
     function poblarSelectCategorias() {
       const select = document.getElementById('presupuesto-categoria');
+      if (!select) return;
       select.innerHTML = Object.keys(CATEGORIAS)
         .filter(key => key !== 'ingreso')
-        .map(key => `<option value="${key}">${CATEGORIAS[key].emoji} ${CATEGORIAS[key].nombre}</option>`)
+        .map(key => `<option value="${key}">${CATEGORIAS[key].nombre}</option>`)
         .join('');
     }
 
@@ -1518,8 +1670,8 @@
         return `
           <div class="flex items-center justify-between p-2 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
             <div class="flex items-center gap-2.5 min-w-0">
-              <span class="w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0" style="background-color: ${cat.color}20; border: 1px solid ${cat.color}35;">
-                ${cat.emoji}
+              <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background-color: ${cat.color}15; color: ${cat.color}; border: 1px solid ${cat.color}30;">
+                ${getCategoriaIcon(catKey, 'w-4 h-4')}
               </span>
               <div class="min-w-0">
                 <p class="text-xs font-bold text-white truncate">${cat.nombre}</p>
@@ -1574,6 +1726,96 @@
         const sec = document.getElementById('section-metas');
         if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    }
+
+    function openAIReportModal() {
+      const modal = document.getElementById('ai-report-modal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const movs = window.lastMovimientosBrutos || [];
+      let totalIngresos = 0;
+      let totalGastos = 0;
+      const gastosPorCat = {};
+
+      movs.forEach(m => {
+        if (m.tipo === 'Ingreso') totalIngresos += Number(m.monto);
+        if (m.tipo === 'Gasto') {
+          totalGastos += Number(m.monto);
+          const c = (m.categoria || 'otro').toLowerCase();
+          gastosPorCat[c] = (gastosPorCat[c] || 0) + Number(m.monto);
+        }
+      });
+
+      let tasaAhorro = 0;
+      if (totalIngresos > 0) {
+        tasaAhorro = Math.max(0, Math.round(((totalIngresos - totalGastos) / totalIngresos) * 100));
+      }
+
+      let topCatNombre = 'Ninguna';
+      let topCatMonto = 0;
+      Object.keys(gastosPorCat).forEach(k => {
+        if (gastosPorCat[k] > topCatMonto) {
+          topCatMonto = gastosPorCat[k];
+          topCatNombre = (CATEGORIAS[k] || { nombre: k }).nombre;
+        }
+      });
+
+      let score = 75;
+      if (tasaAhorro >= 50) score = 95;
+      else if (tasaAhorro >= 30) score = 88;
+      else if (tasaAhorro >= 15) score = 79;
+      else if (tasaAhorro >= 0) score = 65;
+      else score = 40;
+
+      const scoreElem = document.getElementById('ai-modal-score');
+      const rateElem = document.getElementById('ai-modal-savings-rate');
+      const catElem = document.getElementById('ai-modal-top-cat');
+      if (scoreElem) scoreElem.textContent = `${score}/100`;
+      if (rateElem) rateElem.textContent = `${tasaAhorro}%`;
+      if (catElem) catElem.textContent = topCatNombre;
+
+      const patternElem = document.getElementById('ai-modal-pattern-text');
+      const recElem = document.getElementById('ai-modal-recommendation-text');
+
+      if (patternElem && recElem) {
+        if (totalIngresos === 0 && totalGastos === 0) {
+          patternElem.textContent = 'Aún no registras movimientos suficientes para perfilar tu flujo. Empieza registrando tus ingresos y gastos.';
+          recElem.textContent = 'Registra tus transacciones para que Solis AI calcule tus métricas y proyecciones de ahorro.';
+        } else {
+          patternElem.textContent = `Has acumulado ${formatearMoneda(totalIngresos)} en ingresos y ${formatearMoneda(totalGastos)} en gastos. Tu mayor centro de egreso es "${topCatNombre}" con ${formatearMoneda(topCatMonto)}.`;
+          if (tasaAhorro >= 40) {
+            recElem.textContent = `¡Tu capacidad de ahorro es excelente (${tasaAhorro}%)! Puedes abonar una fracción de tu excedente (${formatearMoneda((totalIngresos - totalGastos) * 0.4)}) directamente a tus Metas para acelerar su cumplimiento.`;
+          } else if (tasaAhorro >= 15) {
+            recElem.textContent = `Mantienes un balance neto positivo. Establecer un límite mensual estricto en "${topCatNombre}" te permitirá aumentar tu margen de liquidez al 35%.`;
+          } else {
+            recElem.textContent = `Tus egresos representan un porcentaje elevado frente a tus ingresos. Te recomendamos moderar gastos hormiga y fijar topes en presupuestos.`;
+          }
+        }
+      }
+    }
+
+    function closeAIReportModal() {
+      closeModalWithAnimation('ai-report-modal');
+    }
+
+    function filtrarPorMesGrafico(mIdx, mLabel) {
+      [4, 5, 6, 7, 8, 9].forEach(idx => {
+        const btn = document.getElementById(`pill-month-${idx}`);
+        if (btn) {
+          if (idx === mIdx) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+      mostrarToast(`Visualizando flujo de ${mLabel}`, 'info');
+    }
+
+    function toggleYearFilter() {
+      mostrarToast('Año fiscal activo: 2026', 'info');
     }
     
     
@@ -1674,10 +1916,8 @@
       else saludo = 'Buenas noches';
       
       const usuarioCapitalized = currentUser ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1) : '';
-      const emoji = hora >= 5 && hora < 19 ? '☀️' : '🌙';
-      
       const elem = document.getElementById('greeting-text');
-      if (elem) elem.textContent = `${saludo}, ${usuarioCapitalized} ${emoji}`;
+      if (elem) elem.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1.5 shadow-[0_0_6px_rgba(34,197,94,0.8)]"></span>${saludo}, ${usuarioCapitalized}`;
     }
 
     function procesarYRenderizarDatos(movsBrutos, presupsBrutos, metasBrutas, isFromCache = false) {
@@ -1770,9 +2010,13 @@
       // Insight Inteligente
       let porcentajeGasto = ingresosFiltrados > 0 ? ((gastosFiltrados / ingresosFiltrados) * 100).toFixed(1) : 0;
       let insightMsg = '';
-      if (porcentajeGasto > 90) insightMsg = `⚠️ ¡Alerta! Has gastado el ${porcentajeGasto}% de tus ingresos. Frena tus gastos innecesarios.`;
-      else if (porcentajeGasto > 60) insightMsg = `📊 Llevas gastado el ${porcentajeGasto}% de tus ingresos. Vas a buen ritmo, pero cuida los gastos hormiga.`;
-      else insightMsg = `✨ ¡Excelente! Has gastado solo el ${porcentajeGasto}% de tus ingresos. Tienes buen margen para abonar a tus Metas.`;
+      if (porcentajeGasto > 90) {
+        insightMsg = `<span class="text-rose-400 font-bold">Alerta:</span> Has consumido el ${porcentajeGasto}% de tus ingresos. Conviene reducir gastos discrecionales.`;
+      } else if (porcentajeGasto > 60) {
+        insightMsg = `<span class="text-amber-400 font-bold">Ritmo moderado:</span> Llevas consumido el ${porcentajeGasto}% de tus ingresos. Controla consumos hormiga para proteger tu balance.`;
+      } else {
+        insightMsg = `<span class="text-emerald-400 font-bold">Ritmo óptimo:</span> Has consumido solo el ${porcentajeGasto}% de tus ingresos. Cuentas con excelente margen para tus metas.`;
+      }
       
       const insightElem = document.getElementById('insight-text');
       if (insightElem) insightElem.innerHTML = insightMsg;
@@ -1969,32 +2213,32 @@
         const excedido = p.restante < 0;
         
         return `
-          <div class="bg-[#121214] border border-zinc-800/80 rounded-[2rem] p-6 shadow-xl hover:border-zinc-700 transition-colors">
-            <div class="flex justify-between items-center mb-5">
-               <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-2xl bg-[#18181b] border border-zinc-800 flex items-center justify-center text-2xl shadow-inner" style="color: ${color}">
-                    ${cat.emoji}
+          <div class="solis-subcard p-5 hover:border-white/10 transition-all">
+            <div class="flex justify-between items-center mb-4">
+               <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-inner" style="background-color: ${color}15; color: ${color}; border: 1px solid ${color}30">
+                    ${getCategoriaIcon(catKey, 'w-5 h-5')}
                   </div>
                   <div>
-                     <p class="font-bold text-zinc-100 text-base mb-0.5">${cat.nombre}</p>
+                     <p class="font-bold text-zinc-100 text-sm mb-0.5">${cat.nombre}</p>
                      <p class="text-xs font-semibold text-zinc-500">${formatearMoneda(p.monto_gastado)} gastado</p>
                   </div>
                </div>
-               <div class="flex items-center gap-3">
+               <div class="flex items-center gap-2.5">
                  <div class="text-right">
-                    <p class="text-lg font-bold ${excedido ? 'text-rose-500' : ''}" style="${!excedido ? `color: ${color}` : ''}">${formatearMoneda(p.restante)}</p>
-                    <p class="text-xs font-semibold text-zinc-500 mt-0.5">restante de ${formatearMoneda(p.monto_limite)}</p>
+                    <p class="text-base font-bold ${excedido ? 'text-rose-500' : ''}" style="${!excedido ? `color: ${color}` : ''}">${formatearMoneda(p.restante)}</p>
+                    <p class="text-[10px] font-semibold text-zinc-500 mt-0.5">restante de ${formatearMoneda(p.monto_limite)}</p>
                  </div>
-                 <button onclick="confirmarEliminar('${p.id}', 'presupuesto')" class="w-8 h-8 rounded-xl flex items-center justify-center text-zinc-500 bg-zinc-800/50 hover:bg-rose-500/10 hover:text-rose-500 transition-colors shrink-0 shadow-inner active:scale-95">
-                   <i class="fas fa-trash-alt text-xs"></i>
+                 <button onclick="confirmarEliminar('${p.id}', 'presupuesto')" title="Eliminar Presupuesto" class="w-8 h-8 rounded-xl flex items-center justify-center text-zinc-500 hover:text-rose-400 bg-white/[0.03] hover:bg-rose-500/10 border border-white/5 hover:border-rose-500/20 transition-all shrink-0 active:scale-95">
+                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                  </button>
                </div>
             </div>
-            <div class="flex items-center gap-4">
-               <div class="h-2.5 flex-1 bg-zinc-900 rounded-full overflow-hidden shadow-inner border border-zinc-800/50">
+            <div class="flex items-center gap-3">
+               <div class="h-2 flex-1 bg-zinc-900 rounded-full overflow-hidden shadow-inner border border-white/5">
                  <div class="h-full transition-all duration-1000 rounded-full ${excedido ? 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.6)]' : ''}" style="width: ${Math.min(porcentaje, 100)}%; ${!excedido ? `background-color: ${color}` : ''}"></div>
                </div>
-               <span class="text-xs font-black ${excedido ? 'text-rose-500' : 'text-zinc-400'} w-10 text-right tracking-tight">${Math.round(porcentaje)}%</span>
+               <span class="text-xs font-black ${excedido ? 'text-rose-500' : 'text-zinc-400'} w-9 text-right tracking-tight">${Math.round(porcentaje)}%</span>
             </div>
           </div>
         `;
@@ -2095,22 +2339,25 @@
         } catch(e){}
 
         return `
-          <div class="bg-[#121214] border border-zinc-800/80 rounded-[2rem] p-4 flex items-center gap-4 shadow-lg hover:border-zinc-700 transition-colors">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner" style="background-color: ${cat.color}15; border: 1px solid ${cat.color}30">
-              ${cat.emoji}
+          <div class="solis-subcard p-4 flex items-center gap-4 hover:border-white/10 transition-all">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-inner" style="background-color: ${cat.color}15; color: ${cat.color}; border: 1px solid ${cat.color}30">
+              ${getCategoriaIcon(catKey, 'w-5 h-5')}
             </div>
             <div class="flex-1 min-w-0 pr-1">
               <div class="flex justify-between items-center mb-1">
-                <p class="font-bold text-zinc-100 truncate text-[15px]">${toTitleCase(m.concepto)}</p>
+                <p class="font-bold text-zinc-100 truncate text-[14px]">${toTitleCase(m.concepto)}</p>
                 <p class="font-black ${colorMonto} shrink-0 text-[15px] tracking-tight">${signo}${formatearMoneda(m.monto)}</p>
               </div>
-              <div class="flex justify-between items-center text-[12px]">
+              <div class="flex justify-between items-center text-[11px]">
                 <span class="font-semibold truncate" style="color: ${cat.color}">${cat.nombre}</span>
-                <span class="text-zinc-500 font-medium shrink-0 flex items-center gap-1"><i class="far fa-clock text-[10px]"></i> ${fechaStr}</span>
+                <span class="text-zinc-500 font-medium shrink-0 flex items-center gap-1">
+                  <svg class="w-3 h-3 text-zinc-500 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  ${fechaStr}
+                </span>
               </div>
             </div>
-            <button onclick="confirmarEliminar('${m.id}')" class="w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 transition-colors shrink-0 shadow-inner active:scale-95">
-              <i class="fas fa-trash-alt text-sm"></i>
+            <button onclick="confirmarEliminar('${m.id}')" title="Eliminar Movimiento" class="w-9 h-9 rounded-xl flex items-center justify-center text-zinc-500 hover:text-rose-400 bg-white/[0.03] hover:bg-rose-500/10 border border-white/5 hover:border-rose-500/20 transition-all shrink-0 active:scale-95">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             </button>
           </div>
         `;
@@ -2133,7 +2380,7 @@
       const modal = document.getElementById('gasto-modal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      
+      renderizarChipsCategorias();
       actualizarBarraPresupuesto();
     }
 
@@ -2316,33 +2563,37 @@
       container.innerHTML = metasAhorro.map(meta => {
         const porcentaje = Math.min((meta.monto_actual / meta.monto_objetivo) * 100, 100);
         return `
-        <div class="bg-zinc-900 rounded-3xl p-5 border border-zinc-800 shadow-lg relative overflow-hidden">
+        <div class="solis-subcard p-5 hover:border-white/10 transition-all relative overflow-hidden">
           <div class="flex justify-between items-center mb-4 gap-2">
             <div class="flex items-center gap-3 min-w-0">
-              <span class="text-2xl shrink-0 drop-shadow-sm">${meta.icono || '🎯'}</span>
-              <h3 class="font-bold text-white text-lg truncate">${meta.nombre_meta}</h3>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                </svg>
+              </div>
+              <h4 class="font-bold text-white text-base truncate">${meta.nombre_meta}</h4>
             </div>
             <div class="flex gap-2 shrink-0">
-              <button onclick="retirarMontoMeta('${meta.id}')" class="w-9 h-9 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center hover:bg-rose-500/20 transition border border-rose-500/20 shadow-inner active:scale-95">
-                <i class="fas fa-minus text-sm"></i>
+              <button onclick="retirarMontoMeta('${meta.id}')" title="Retirar Fondos" class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 flex items-center justify-center transition border border-rose-500/20 active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
               </button>
-              <button onclick="addMontoMeta('${meta.id}')" class="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/20 transition border border-emerald-500/20 shadow-inner active:scale-95">
-                <i class="fas fa-plus text-sm"></i>
+              <button onclick="addMontoMeta('${meta.id}')" title="Abonar a Meta" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center transition border border-emerald-500/20 active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
               </button>
             </div>
           </div>
           <div class="flex justify-between items-end mb-2">
             <div>
-              <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider">Ahorrado</p>
-              <p class="text-lg font-bold text-white">${formatearMoneda(meta.monto_actual)}</p>
+              <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Ahorrado</p>
+              <p class="text-base font-bold text-white">${formatearMoneda(meta.monto_actual)}</p>
             </div>
             <div class="text-right">
-              <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider">Meta</p>
-              <p class="text-sm font-bold text-zinc-400">${formatearMoneda(meta.monto_objetivo)}</p>
+              <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Objetivo</p>
+              <p class="text-xs font-bold text-zinc-400">${formatearMoneda(meta.monto_objetivo)}</p>
             </div>
           </div>
           <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-            <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: ${porcentaje}%"></div>
+            <div class="h-full bg-emerald-500 rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(34,197,94,0.6)]" style="width: ${porcentaje}%"></div>
           </div>
         </div>
         `;
@@ -2645,15 +2896,17 @@
         const cat = CATEGORIAS[catKey] || CATEGORIAS.otro;
         const porcentaje = maxTotal > 0 ? (item.total / maxTotal) * 100 : 0;
         return `
-          <div>
+          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
             <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-2">
-                <span class="text-xl p-2 rounded-lg" style="background-color: ${cat.color}20">${cat.emoji}</span>
-                <span class="text-sm font-semibold">${cat.nombre}</span>
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl flex items-center justify-center" style="background-color: ${cat.color}20; color: ${cat.color}; border: 1px solid ${cat.color}35">
+                  ${getCategoriaIcon(catKey, 'w-4 h-4')}
+                </span>
+                <span class="text-xs font-bold text-white">${cat.nombre}</span>
               </div>
-              <span class="text-sm font-bold text-gray-200">${formatearMoneda(item.total)}</span>
+              <span class="text-xs font-bold text-zinc-200">${formatearMoneda(item.total)}</span>
             </div>
-            <div class="progress-bar rounded-full h-2 bg-zinc-700 overflow-hidden">
+            <div class="progress-bar rounded-full h-1.5 bg-zinc-800 overflow-hidden">
               <div class="progress-fill h-full rounded-full transition-all duration-500" style="width: ${porcentaje}%; background-color: ${cat.color}"></div>
             </div>
           </div>`;
@@ -2687,10 +2940,8 @@
     }
 
     function resetCategoryChips() {
-      const chips = document.querySelectorAll('.category-chip');
-      chips.forEach(c => c.classList.remove('active'));
-      chips[0].classList.add('active');
       categoriaSeleccionada = 'alimentacion';
+      renderizarChipsCategorias();
     }
 
     function actualizarBarraPresupuesto() {
