@@ -1,4 +1,4 @@
-const CACHE_NAME = 'finance-tracker-v460';
+const CACHE_NAME = 'finance-tracker-v500';
 const ASSETS_TO_CACHE = [
   'https://kennedy-sj8.github.io/finance-tracker/',
   'https://kennedy-sj8.github.io/finance-tracker/index.html',
@@ -29,7 +29,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('script.google.com')) return;
+  // Ignorar peticiones de APIs backend para que siempre vayan a la red viva
+  if (event.request.url.includes('script.google.com') || event.request.url.includes('supabase.co')) return;
   
   // ESTRATEGIA: NETWORK FIRST (Prioridad a internet, si falla usa caché)
   event.respondWith(
